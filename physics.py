@@ -18,13 +18,13 @@ def calculateNewLength(
     Args:
         - origLength (float): The original length of the string in meters.
         - actualLength (float): The actual length of the string in meters.
-        - turnAngle (float): The turn angle of the string in degrees.
+        - turnAngle (float): The turn angle of the string in revolutions.
 
     Returns:
         - float: The new length of the string in meters.
     """
 
-    newLength = actualLength + 2 * np.pi * 0.005 * turnAngle / 360
+    newLength = actualLength + 2 * np.pi * 0.005 * turnAngle
 
     return max(origLength, newLength)
 
