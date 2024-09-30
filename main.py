@@ -34,22 +34,24 @@ def createController() -> ctrl.ControlSystemSimulation:
     frequencyDifference.automf(names=["higher", "perfect", "lower"])
     stringLength.automf(names=["small", "long"])
 
-    turn["loosen2"] = fuzz.trimf(turn.universe, [-5, -5, 0])
-    turn["loosen1"] = fuzz.trimf(turn.universe, [-2.5, -2.5, 0])
-    turn["tighten1"] = fuzz.trimf(turn.universe, [0, 2.5, 2.5])
-    turn["tighten2"] = fuzz.trimf(turn.universe, [0, 5, 5])
+    turn["fully_loosen"] = fuzz.trimf(turn.universe, [-5, -5, 0])
+    turn["slightly_loosen"] = fuzz.trimf(turn.universe, [-2.5, -2.5, 0])
+    turn["slightly_tighten"] = fuzz.trimf(turn.universe, [0, 2.5, 2.5])
+    turn["fully_tighten"] = fuzz.trimf(turn.universe, [0, 5, 5])
+
+    turn.view()
 
     rule1 = ctrl.Rule(
-        frequencyDifference["higher"] & stringLength["long"], turn["loosen2"]
+        frequencyDifference["higher"] & stringLength["long"], turn["fully_loosen"]
     )
     rule2 = ctrl.Rule(
-        frequencyDifference["higher"] & stringLength["small"], turn["loosen1"]
+        frequencyDifference["higher"] & stringLength["small"], turn["slightly_loosen"]
     )
     rule3 = ctrl.Rule(
-        frequencyDifference["lower"] & stringLength["small"], turn["tighten1"]
+        frequencyDifference["lower"] & stringLength["small"], turn["slightly_tighten"]
     )
     rule4 = ctrl.Rule(
-        frequencyDifference["lower"] & stringLength["long"], turn["tighten2"]
+        frequencyDifference["lower"] & stringLength["long"], turn["fully_tighten"]
     )
 
     turn_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4])
