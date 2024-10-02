@@ -64,9 +64,6 @@ if __name__ == "__main__":
     # https://en.wikipedia.org/wiki/Guitar_tunings
     frequencies = [329.63, 246.94, 196.00, 146.83, 110.00, 82.41]
 
-    # for f in frequencies:
-    #     sound.playCordFrequency(f)
-
     # https://en.wikipedia.org/wiki/Psychoacoustics
     frequencyDiscrimination = 3.6
 
@@ -89,6 +86,7 @@ if __name__ == "__main__":
 
     while np.any(np.abs(frequencies - stringFrequencies) > frequencyDiscrimination):
         print(stringFrequencies)
+        # sound.playStrum(stringFrequencies)
         for i in range(len(frequencies)):
             difference = frequencies[i] - stringFrequencies[i]
             turner.input["frequency"] = difference
