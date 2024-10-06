@@ -25,6 +25,7 @@ def createCordFrequency(frequency: float) -> np.ndarray:
         signal = np.zeros(int(sr * duration))
 
     else:
+        frequency = max(frequency, 1)
         # Calculate delay length based on frequency
         delay_length = int(sr / frequency)  # Samples
         delay_line = (

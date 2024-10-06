@@ -37,8 +37,6 @@ def createController() -> ctrl.ControlSystemSimulation:
     turn["slightly_tighten"] = fuzz.trimf(turn.universe, [0, 2.5, 2.5])
     turn["fully_tighten"] = fuzz.trimf(turn.universe, [0, 5, 5])
 
-    turn.view()
-
     rule1 = ctrl.Rule(
         frequencyDifference["higher"] & stringLength["long"], turn["fully_loosen"]
     )
