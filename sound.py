@@ -21,26 +21,34 @@ def createCordFrequency(frequency: float) -> np.ndarray:
     decay = 0.99  # Feedback decay factor
     duration = 2  # Duration in seconds
 
-    # Calculate delay length based on frequency
-    delay_length = int(sr / frequency)  # Samples
-    delay_line = np.random.rand(delay_length) * 2 - 1  # Initialize with random values
+    if frequency <= 0:
+        signal = np.zeros(int(sr * duration))
 
-    # Initialize the output signal
-    signal = np.zeros(int(sr * duration))
+    else:
+        # Calculate delay length based on frequency
+        delay_length = int(sr / frequency)  # Samples
+        delay_line = (
+            np.random.rand(delay_length) * 2 - 1
+        )  # Initialize with random values
 
-    # Fill the output signal with the initial noise
-    for i in range(delay_length):
-        signal[i] = delay_line[i]
+        # Initialize the output signal
+        signal = np.zeros(int(sr * duration))
 
-    # Generate the signal using the Karplus-Strong method
-    for i in range(delay_length, len(signal)):
-        # Average the first two samples of the delay line
-        avg = 0.5 * (delay_line[i % delay_length] + delay_line[(i + 1) % delay_length])
-        # Apply decay
-        output = avg * decay
-        # Store in the delay line and signal
-        delay_line[i % delay_length] = output
-        signal[i] = output
+        # Fill the output signal with the initial noise
+        for i in range(delay_length):
+            signal[i] = delay_line[i]
+
+        # Generate the signal using the Karplus-Strong method
+        for i in range(delay_length, len(signal)):
+            # Average the first two samples of the delay line
+            avg = 0.5 * (
+                delay_line[i % delay_length] + delay_line[(i + 1) % delay_length]
+            )
+            # Apply decay
+            output = avg * decay
+            # Store in the delay line and signal
+            delay_line[i % delay_length] = output
+            signal[i] = output
 
     return signal
 
@@ -64,11 +72,11 @@ def playSound(signal: np.ndarray, sr: int = 16000) -> None:
 def combineSounds(signals: list, soundLength: int = 2000) -> np.ndarray:
     """
     Combine a list of sound signals into a single sound signal.
-    
+
     The lengths calculations are to check what the length of the final
     sound is going to be. It is going to be at least the sound length
     times the number of sounds plus the remaining time.
-    
+
     Args:
         - signals (list): A list of sound signals.
         - soundLength (int): The length from the start of one sound
@@ -87,7 +95,7 @@ def combineSounds(signals: list, soundLength: int = 2000) -> np.ndarray:
     finalSignal = np.zeros(finalSignalLength)
 
     for i in range(len(signals)):
-        finalSignal[i * soundLength : i * soundLength + len(signals[i])] = signals[i]
+        finalSignal[i * soundLength : i * soundLength + len(signals[i])] += signals[i]
 
     return finalSignal
 
