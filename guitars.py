@@ -10,7 +10,7 @@ class ClassicalGuitar(instrument.Instrument):
     frequencies = [329.63, 246.94, 196.00, 146.83, 110.00, 82.41]
 
     # https://en.wikipedia.org/wiki/Scale_length_(string_instruments)
-    lengths = [65] * len(frequencies)
+    lengths = [0.65] * len(frequencies)
 
     # Nylon: https://en.wikipedia.org/wiki/Young%27s_modulus
     youngModulus = 2.93

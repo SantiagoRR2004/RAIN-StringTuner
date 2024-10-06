@@ -105,7 +105,7 @@ def calculateStringNewFrequency(
     newLength = calculateNewLength(origLength, actualLength, turnAngle)
     lengthDifference = newLength - origLength
     return (
-        youngModulus * lengthDifference * newLength**2 / density * origLength**2
+        (youngModulus * lengthDifference * newLength**2) / (density * origLength**2)
     ) ** (1 / 2) / (2 * origLength)
 
 
@@ -124,7 +124,7 @@ m0 = d * A0 * L0
 
 f = (E * A0 * (L1-L0) * L1**2 / (d * A0 * L0**3))**(1/2) / (2 * L0)
 
-f = (E * (L1-L0) * L1**2 / d * L0**3)**(1/2) / (2 * L0)
+f = (E * (L1-L0) * L1**2 / (d * L0**3))**(1/2) / (2 * L0)
 
 
 """
