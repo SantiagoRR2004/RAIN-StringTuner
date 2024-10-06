@@ -25,18 +25,18 @@ class Instrument(abc.ABC):
             for i in range(len(self.frequencies)):
                 difference = self.frequencies[i] - self.stringFrequencies[i]
                 self.turner.input["frequency"] = difference
-                self.turner.input["stringLength"] = self.guitarLength
+                self.turner.input["stringLength"] = self.lengths[i]
 
                 self.turner.compute()
 
                 turn = self.turner.output["turn"]
 
                 self.stringLengths[i] = physics.calculateNewLength(
-                    self.guitarLength, self.stringLengths[i], turn
+                    self.lengths[i], self.stringLengths[i], turn
                 )
 
                 self.stringFrequencies[i] = physics.calculateStringNewFrequency(
-                    self.guitarLength,
+                    self.lengths[i],
                     self.stringLengths[i],
                     turn,
                     self.youngModulus,
