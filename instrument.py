@@ -11,12 +11,62 @@ class Instrument(abc.ABC):
 
     turner = logic.createController()
 
+    def __init__(self) -> None:
+        """
+        Initialize the instrument.
+
+        All the strings are placed with zero tension
+        so their frequencies are zero.
+
+        It requires the following attributes to be already defined:
+            - frequencies (list): The frequencies of the strings in hertz.
+            - lengths (list): The lengths of the strings in meters.
+
+        Args:
+            - None
+
+        Returns:
+            - None
+        """
+        self.stringFrequencies = np.zeros(len(self.frequencies))
+        self.stringLengths = self.lengths.copy()
+        self.checker()
+
+    def checker(self) -> None:
+        """
+        Check if the lists that represent different attributes
+        of the strings have the same length.
+
+        It raises a ValueError if the lengths are different.
+
+        It requires the following attributes to be already defined:
+            - frequencies (list): The frequencies of the strings in hertz.
+            - lengths (list): The lengths of the strings in meters.
+
+        Args:
+            - None
+
+        Returns:
+            - None
+        """
+        if len(self.frequencies) != len(self.lengths):
+            raise ValueError("The number of frequencies and lengths must be the same.")
+        elif len(self.frequencies) != len(self.stringFrequencies):
+            raise ValueError(
+                "The number of frequencies and string frequencies must be the same."
+            )
+        elif len(self.lengths) != len(self.stringLengths):
+            raise ValueError(
+                "The number of lengths and string lengths must be the same."
+            )
+
     def tune(self, soundEnabled: bool = False) -> None:
         while np.any(
             np.abs(self.frequencies - self.stringFrequencies)
             > self.frequencyDiscrimination
         ):
             """
+            Document this method.
             """
             print(self.stringFrequencies)
             if soundEnabled:
@@ -42,5 +92,3 @@ class Instrument(abc.ABC):
                     self.youngModulus,
                     self.density,
                 )
-
-

@@ -17,9 +17,3 @@ class ClassicalGuitar(instrument.Instrument):
 
     # https://en.wikipedia.org/wiki/Nylon_66
     density = 1140
-
-    stringLengths = (0.01 + lengths[0]) * np.ones(len(frequencies))
-
-    stringFrequencies = physics.calculateStringNewFrequency(
-        lengths[0], 0.01 + lengths[0], 0, youngModulus, density
-    ) * np.ones(len(frequencies))
