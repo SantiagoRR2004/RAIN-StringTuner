@@ -13,7 +13,7 @@ class ClassicalGuitar(instrument.Instrument):
     lengths = [0.65] * len(frequencies)
 
     # Nylon: https://en.wikipedia.org/wiki/Young%27s_modulus
-    youngModulus = 2.93
+    youngModulus = 2.93 * (10 ** 9)
 
     # https://en.wikipedia.org/wiki/Nylon_66
     density = 1140
