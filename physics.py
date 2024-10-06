@@ -24,7 +24,7 @@ def calculateNewLength(
         - float: The new length of the string in meters.
     """
 
-    newLength = actualLength + 2 * np.pi * 0.005 * turnAngle
+    newLength = actualLength + (2 * np.pi * 0.005 * turnAngle)
 
     return max(origLength, newLength)
 
@@ -53,7 +53,7 @@ def calculateStringTension(
         elasticModulus
         * crossSection
         * (newLength - originalLength)
-        / (originalLength * 2)
+        / originalLength
     )
 
 
@@ -105,8 +105,8 @@ def calculateStringNewFrequency(
     newLength = calculateNewLength(origLength, actualLength, turnAngle)
     lengthDifference = newLength - origLength
     return (
-        (youngModulus * lengthDifference * newLength**2) / (density * origLength**2)
-    ) ** (1 / 2) / (2 * origLength)
+        ((youngModulus * lengthDifference * newLength) / (density * origLength**2)
+    ) ** (1 / 2)) / (2 * origLength)
 
 
 """
@@ -116,15 +116,17 @@ f = (T / u)**(1/2) / (2*L0)
 T = E * A0 * (L1-L0) / L0
 u = m1 / L0
 
-f = (E * A0 * (L1-L0) / (L0 * m1))**(1/2) / (2*L0)
+f = (E * A0 * (L1-L0) / m1)**(1/2) / (2*L0)
 m1 = m0 * (L0 / L1)
 
-f = (E * A0 * (L1-L0) / (L0 * m0 * (L0 / L1)))**(1/2) / (2*L0)
+f = (E * A0 * (L1-L0) / (m0 * (L0 / L1)))**(1/2) / (2*L0)
+
+f = (E * A0 * (L1-L0) * L1 / (m0 * L0))**(1/2) / (2*L0)
 m0 = d * A0 * L0
 
-f = (E * A0 * (L1-L0) * L1**2 / (d * A0 * L0**3))**(1/2) / (2 * L0)
+f = (E * A0 * (L1-L0) * L1 / (d * A0 * L0**2))**(1/2) / (2 * L0)
 
-f = (E * (L1-L0) * L1**2 / (d * L0**3))**(1/2) / (2 * L0)
+f = (E * (L1-L0) * L1 / (d * L0**2))**(1/2) / (2 * L0)
 
 
 """
