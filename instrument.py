@@ -60,6 +60,35 @@ class Instrument(abc.ABC):
                 "The number of lengths and string lengths must be the same."
             )
 
+    def play(self) -> None:
+        """
+        Play the instrument.
+
+        Args:
+            - None
+
+        Returns:
+            - None
+        """
+        self.checker()
+        sound.playStrum(self.stringFrequencies)
+
+    def playPerfect(self) -> None:
+        """
+        Play the perfect sound of the instrument.
+
+        It requires the following attributes to be already defined:
+            - frequencies (list): The frequencies of the strings in hertz.
+
+        Args:
+            - None
+
+        Returns:
+            - None
+        """
+        self.checker()
+        sound.playStrum(self.frequencies)
+
     def tune(self, soundEnabled: bool = False) -> None:
         while np.any(
             np.abs(self.frequencies - self.stringFrequencies)
@@ -70,7 +99,7 @@ class Instrument(abc.ABC):
             """
             print(self.stringFrequencies)
             if soundEnabled:
-                sound.playStrum(self.stringFrequencies)
+                self.play()
 
             for i in range(len(self.frequencies)):
                 difference = self.frequencies[i] - self.stringFrequencies[i]
