@@ -1,8 +1,6 @@
 # https://en.wikipedia.org/wiki/Outline_of_guitars
 
 import instrument
-import physics
-import numpy as np
 
 
 class ClassicalGuitar(instrument.Instrument):
