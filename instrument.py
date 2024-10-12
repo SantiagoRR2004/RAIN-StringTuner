@@ -103,12 +103,16 @@ class Instrument(abc.ABC):
 
             for i in range(len(self.frequencies)):
                 difference = self.frequencies[i] - self.stringFrequencies[i]
-                self.turner.input["frequency"] = difference
+                self.turner.input["frequency"] = abs(difference)
                 self.turner.input["stringLength"] = self.lengths[i]
 
                 self.turner.compute()
 
                 turn = self.turner.output["turn"]
+
+                if difference < 0:
+                    # The string is too tight
+                    turn *= -1
 
                 self.stringLengths[i] = physics.calculateNewLength(
                     self.lengths[i], self.stringLengths[i], turn

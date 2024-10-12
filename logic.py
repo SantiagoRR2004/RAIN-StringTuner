@@ -18,7 +18,7 @@ def createController() -> ctrl.ControlSystemSimulation:
     maxFrecuency = 20000
     minFrecuency = 20
     frequencyDifference = ctrl.Antecedent(
-        np.arange(minFrecuency - maxFrecuency, maxFrecuency - minFrecuency, 1),
+        np.arange(0, maxFrecuency - minFrecuency, 1),
         "frequency",
     )
 
@@ -27,28 +27,26 @@ def createController() -> ctrl.ControlSystemSimulation:
     minLength = 8
     stringLength = ctrl.Antecedent(np.arange(minLength, maxLength, 1), "stringLength")
 
-    turn = ctrl.Consequent(np.arange(-5, 5, 1), "turn")
+    turn = ctrl.Consequent(np.arange(0, 1.1, 0.1), "turn")
 
-    frequencyDifference.automf(names=["higher", "perfect", "lower"])
+    frequencyDifference.automf(names=["close", "far"])
     stringLength.automf(names=["small", "long"])
 
-    turn["fully_loosen"] = fuzz.trimf(turn.universe, [-5, -5, 0])
-    turn["slightly_loosen"] = fuzz.trimf(turn.universe, [-2.5, -2.5, 0])
-    turn["slightly_tighten"] = fuzz.trimf(turn.universe, [0, 2.5, 2.5])
-    turn["fully_tighten"] = fuzz.trimf(turn.universe, [0, 5, 5])
+    turn["very_little"] = fuzz.trimf(turn.universe, [0, 0.1, 0.1])
+    turn["little"] = fuzz.trimf(turn.universe, [0.5, 0.5, 1])
+    turn["medium"] = fuzz.trimf(turn.universe, [0, 0.5, 1])
+    turn["a_lot"] = fuzz.trimf(turn.universe, [1, 1, 1])
 
     rule1 = ctrl.Rule(
-        frequencyDifference["higher"] & stringLength["long"], turn["fully_loosen"]
+        frequencyDifference["close"] & stringLength["small"], turn["very_little"]
     )
     rule2 = ctrl.Rule(
-        frequencyDifference["higher"] & stringLength["small"], turn["slightly_loosen"]
+        frequencyDifference["close"] & stringLength["long"], turn["little"]
     )
     rule3 = ctrl.Rule(
-        frequencyDifference["lower"] & stringLength["small"], turn["slightly_tighten"]
+        frequencyDifference["far"] & stringLength["small"], turn["medium"]
     )
-    rule4 = ctrl.Rule(
-        frequencyDifference["lower"] & stringLength["long"], turn["fully_tighten"]
-    )
+    rule4 = ctrl.Rule(frequencyDifference["far"] & stringLength["long"], turn["a_lot"])
 
     turn_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4])
     turner = ctrl.ControlSystemSimulation(turn_ctrl)
