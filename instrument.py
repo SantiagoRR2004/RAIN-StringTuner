@@ -114,7 +114,7 @@ class Instrument(abc.ABC):
                     if difference < 0:
                         # The string is too tight
                         turn *= -1
-
+                    print(turn)
                     self.stringLengths[i] = physics.calculateNewLength(
                         self.lengths[i], self.stringLengths[i], turn
                     )
