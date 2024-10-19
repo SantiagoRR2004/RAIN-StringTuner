@@ -9,7 +9,7 @@ class Instrument(abc.ABC):
     # https://en.wikipedia.org/wiki/Psychoacoustics
     frequencyDiscrimination = 3.6
 
-    turner = logic.createController()
+    turner = logic.Tuner()
 
     def __init__(self) -> None:
         """
@@ -104,18 +104,13 @@ class Instrument(abc.ABC):
             for i in range(len(self.frequencies)):
                 difference = self.frequencies[i] - self.stringFrequencies[i]
                 if abs(difference) > self.frequencyDiscrimination:
-                    self.turner.input["frequency"] = abs(difference)
-                    self.turner.input["stringLength"] = self.lengths[i]
 
-                    self.turner.compute()
+                    turn = self.turner.tune(
+                        self.frequencies[i], self.stringFrequencies[i], self.lengths[i]
+                    )
 
-                    turn = self.turner.output["turn"]
-
-                    if difference < 0:
-                        # The string is too tight
-                        turn *= -1
                     print(turn)
-                    self.stringLengths[i] = physics.calculateNewLength(
+                    newLength = physics.calculateNewLength(
                         self.lengths[i], self.stringLengths[i], turn
                     )
 
@@ -126,3 +121,5 @@ class Instrument(abc.ABC):
                         self.youngModulus,
                         self.density,
                     )
+
+                    self.stringLengths[i] = newLength
