@@ -11,7 +11,8 @@ def calculateNewLength(
     If the turnAngle is positive, the new length will be greater than the actual length.
     If the turnAngle is negative, the new length will be less than the actual length.
 
-    We estimate that the string peg to be 5 mm in radius.
+    We estimate that the string peg to be 3 mm in radius.
+    We use a photo that Lucas gave us. It is in the documentation file.
 
     We do not allow the new length to be less than the original length.
 
@@ -24,7 +25,7 @@ def calculateNewLength(
         - float: The new length of the string in meters.
     """
 
-    newLength = actualLength + (2 * np.pi * 0.005 * turnAngle)
+    newLength = actualLength + (2 * np.pi * 0.003 * turnAngle)
 
     return max(origLength, newLength)
 
@@ -49,12 +50,7 @@ def calculateStringTension(
     Returns:
         - float: The tension of the string in newtons.
     """
-    return (
-        elasticModulus
-        * crossSection
-        * (newLength - originalLength)
-        / originalLength
-    )
+    return elasticModulus * crossSection * (newLength - originalLength) / originalLength
 
 
 def calculateStringFrequencyMersenne(
@@ -105,28 +101,6 @@ def calculateStringNewFrequency(
     newLength = calculateNewLength(origLength, actualLength, turnAngle)
     lengthDifference = newLength - origLength
     return (
-        ((youngModulus * lengthDifference * newLength) / (density * origLength**2)
-    ) ** (1 / 2)) / (2 * origLength)
-
-
-"""
-
-f = (T / u)**(1/2) / (2*L0)
-
-T = E * A0 * (L1-L0) / L0
-u = m1 / L0
-
-f = (E * A0 * (L1-L0) / m1)**(1/2) / (2*L0)
-m1 = m0 * (L0 / L1)
-
-f = (E * A0 * (L1-L0) / (m0 * (L0 / L1)))**(1/2) / (2*L0)
-
-f = (E * A0 * (L1-L0) * L1 / (m0 * L0))**(1/2) / (2*L0)
-m0 = d * A0 * L0
-
-f = (E * A0 * (L1-L0) * L1 / (d * A0 * L0**2))**(1/2) / (2 * L0)
-
-f = (E * (L1-L0) * L1 / (d * L0**2))**(1/2) / (2 * L0)
-
-
-"""
+        ((youngModulus * lengthDifference * newLength) / (density * origLength**2))
+        ** (1 / 2)
+    ) / (2 * origLength)
