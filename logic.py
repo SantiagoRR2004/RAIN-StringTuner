@@ -66,6 +66,9 @@ class Tuner:
         rule2 = ctrl.Rule(
             frequencyDifference["close"] & stringLength["small"], turn["very_little"]
         )
+        rule10 = ctrl.Rule(
+            frequencyDifference["medium"] & stringLength["small"], turn["little"]
+        )
         rule3 = ctrl.Rule(
             frequencyDifference["far"] & stringLength["small"], turn["medium"]
         )
@@ -93,7 +96,7 @@ class Tuner:
         )
 
         turn_ctrl = ctrl.ControlSystem(
-            [rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9]
+            [rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9, rule10]
         )
         turner = ctrl.ControlSystemSimulation(turn_ctrl)
 
