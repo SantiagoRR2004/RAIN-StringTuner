@@ -89,17 +89,34 @@ class Instrument(abc.ABC):
         self.checker()
         sound.playStrum(self.frequencies)
 
-    def tune(self, soundEnabled: bool = False) -> None:
+    def tune(self, soundEnabled: bool = False) -> list:
+        """
+        Tune the instrument.
+
+        It requires the following attributes to be already defined:
+            - frequencies (list): The frequencies of the strings in hertz.
+            - lengths (list): The lengths of the strings in meters.
+            - youngModulus (float): The young modulus of the strings in pascals.
+            - density (float): The density of the strings in kilograms per cubic meter.
+
+        Args:
+            - soundEnabled (bool): A boolean that indicates if the sound is enabled.
+
+        Returns:
+            - list: A list of the turns that were made to tune the instrument.
+                    This is a list of lists where each list represents an iteration
+                    of string tunning.
+        """
+        turns = []
         while np.any(
             np.abs(self.frequencies - self.stringFrequencies)
             > self.frequencyDiscrimination
         ):
-            """
-            Document this method.
-            """
             print(self.stringFrequencies)
             if soundEnabled:
                 self.play()
+
+            turnIteration = np.zeros(len(self.frequencies))
 
             for i in range(len(self.frequencies)):
                 difference = self.frequencies[i] - self.stringFrequencies[i]
@@ -109,7 +126,8 @@ class Instrument(abc.ABC):
                         self.frequencies[i], self.stringFrequencies[i], self.lengths[i]
                     )
 
-                    print(turn)
+                    turnIteration[i] = turn
+
                     newLength = physics.calculateNewLength(
                         self.lengths[i], self.stringLengths[i], turn
                     )
@@ -123,3 +141,7 @@ class Instrument(abc.ABC):
                     )
 
                     self.stringLengths[i] = newLength
+
+            turns.append(turnIteration)
+
+        return turns
