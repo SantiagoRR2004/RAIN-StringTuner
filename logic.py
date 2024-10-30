@@ -9,33 +9,24 @@ class Tuner:
 
         self.tuner = self.createController()
 
-    def createController(self) -> ctrl.ControlSystemSimulation:
+    def antecedentFrequency(self) -> ctrl.Antecedent:
         """
-        Create a fuzzy controller to tune a string.
+        Create the antecedent for the frequency difference.
+        We use the data from this source:
+        https://en.wikipedia.org/wiki/Audio_frequency
 
         Args:
             - None
 
         Returns:
-            - ctrl.ControlSystemSimulation: A fuzzy controller to tune a string.
+            - ctrl.Antecedent: The antecedent for the frequency difference.
         """
-
-        # https://en.wikipedia.org/wiki/Audio_frequency
         maxFrecuency = 20000
         minFrecuency = 20
         frequencyDifference = ctrl.Antecedent(
             np.arange(0, maxFrecuency - minFrecuency, 1),
             "frequency",
         )
-
-        # https://www.harpsatsang.com/harp_design/data/stringcalculator.html
-        maxLength = 1.2
-        minLength = 0.08
-        stringLength = ctrl.Antecedent(
-            np.arange(minLength, maxLength, 0.01), "stringLength"
-        )
-
-        turn = ctrl.Consequent(np.arange(0, 1.1, 0.01), "turn")
 
         frequencyDifference["very_close"] = fuzz.trimf(
             frequencyDifference.universe, [0, 0, 50]
@@ -50,54 +41,114 @@ class Tuner:
             frequencyDifference.universe, [500, 1000, 19800]
         )
 
+        return frequencyDifference
+
+    def antecedentLength(self) -> ctrl.Antecedent:
+        """
+        Create the antecedent for the string length.
+        For the limits we use the data from this source:
+        # https://www.harpsatsang.com/harp_design/data/stringcalculator.html
+
+        Args:
+            - None
+
+        Returns:
+            - ctrl.Antecedent: The antecedent for the string length.
+        """
+        maxLength = 1.2
+        minLength = 0.08
+        stringLength = ctrl.Antecedent(
+            np.arange(minLength, maxLength, 0.01), "stringLength"
+        )
+
         stringLength["small"] = fuzz.trimf(stringLength.universe, [0.08, 0.08, 0.7])
         stringLength["medium"] = fuzz.trimf(stringLength.universe, [0.4, 0.80, 1.0])
         stringLength["long"] = fuzz.trimf(stringLength.universe, [0.8, 1.20, 1.20])
+
+        return stringLength
+
+    def consequentTurn(self) -> ctrl.Consequent:
+        """
+        Create the consequent for the turn.
+
+        Args:
+            - None
+
+        Returns:
+            - ctrl.Consequent: The consequent for the turn.
+        """
+        turn = ctrl.Consequent(np.arange(0, 1.1, 0.01), "turn")
 
         turn["very_little"] = fuzz.trimf(turn.universe, [0, 0, 0.05])
         turn["little"] = fuzz.trimf(turn.universe, [0.05, 0.2, 0.4])
         turn["medium"] = fuzz.trimf(turn.universe, [0.3, 0.5, 0.8])
         turn["a_lot"] = fuzz.trimf(turn.universe, [0.6, 1, 1])
 
-        rule1 = ctrl.Rule(
-            frequencyDifference["very_close"] & stringLength["small"],
-            turn["very_little"],
-        )
-        rule2 = ctrl.Rule(
-            frequencyDifference["close"] & stringLength["small"], turn["very_little"]
-        )
-        rule10 = ctrl.Rule(
-            frequencyDifference["medium"] & stringLength["small"], turn["little"]
-        )
-        rule3 = ctrl.Rule(
-            frequencyDifference["far"] & stringLength["small"], turn["medium"]
-        )
-        rule4 = ctrl.Rule(
-            frequencyDifference["very_close"] & stringLength["medium"],
-            turn["very_little"],
-        )
-        rule5 = ctrl.Rule(
-            frequencyDifference["close"] & stringLength["medium"], turn["little"]
-        )
-        rule5 = ctrl.Rule(
-            frequencyDifference["medium"] & stringLength["medium"], turn["medium"]
-        )
-        rule6 = ctrl.Rule(
-            frequencyDifference["far"] & stringLength["medium"], turn["a_lot"]
-        )
-        rule7 = ctrl.Rule(
-            frequencyDifference["very_close"] & stringLength["long"], turn["little"]
-        )
-        rule8 = ctrl.Rule(
-            frequencyDifference["close"] & stringLength["long"], turn["medium"]
-        )
-        rule9 = ctrl.Rule(
-            frequencyDifference["far"] & stringLength["long"], turn["a_lot"]
-        )
+        return turn
 
-        turn_ctrl = ctrl.ControlSystem(
-            [rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9, rule10]
-        )
+    def createRules(
+        self,
+        frequencyDifference: ctrl.Antecedent,
+        stringLength: ctrl.Antecedent,
+        turn: ctrl.Consequent,
+    ) -> ctrl.ControlSystem:
+        """
+        Create the rules for the fuzzy controller.
+        The frequency and turn need to have the same number of terms
+        and be in the same order.
+        The lenght has three terms.
+
+        Initially we choose the turn to be the same as the frequency.
+
+        Then the length of the string will modify the turn.
+        If the string is short, the turn will be changed to the previous turn.
+        If the string is long, the turn will be changed to the next turn.
+
+        Args:
+            - frequencyDifference (ctrl.Antecedent): The antecedent for the frequency difference.
+            - stringLength (ctrl.Antecedent): The antecedent for the string length.
+            - turn (ctrl.Consequent): The consequent for the turn.
+
+        Returns:
+            - ctrl.ControlSystem: The rules for the fuzzy controller.
+        """
+        rules = []
+
+        for idF, (_, freq) in enumerate(frequencyDifference.terms.items()):
+            for idL, (_, length) in enumerate(stringLength.terms.items()):
+                turnValue = idF
+                if idL == 0:
+                    turnValue = max(0, idF - 1)
+                elif idL == 2:
+                    turnValue = min(len(frequencyDifference.terms) - 1, idF + 1)
+
+                rule = ctrl.Rule(
+                    freq & length,
+                    list(turn.terms.values())[turnValue],
+                )
+                rules.append(rule)
+
+        turn_ctrl = ctrl.ControlSystem(rules)
+
+        return turn_ctrl
+
+    def createController(self) -> ctrl.ControlSystemSimulation:
+        """
+        Create a fuzzy controller to tune a string.
+
+        Args:
+            - None
+
+        Returns:
+            - ctrl.ControlSystemSimulation: A fuzzy controller to tune a string.
+        """
+
+        frequencyDifference = self.antecedentFrequency()
+        stringLength = self.antecedentLength()
+        turn = self.consequentTurn()
+
+        turn_ctrl = self.createRules(frequencyDifference, stringLength, turn)
+
         turner = ctrl.ControlSystemSimulation(turn_ctrl)
 
         return turner
@@ -143,3 +194,10 @@ class Tuner:
             turn *= -1
 
         return turn
+
+
+if __name__ == "__main__":
+    turner = Tuner()
+    turner.createRules(
+        turner.antecedentFrequency(), turner.antecedentLength(), turner.consequentTurn()
+    )
