@@ -1,6 +1,8 @@
 import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 import numpy as np
+import matplotlib.pyplot as plt
+from concurrent.futures import ProcessPoolExecutor
 
 
 class Tuner:
@@ -38,7 +40,7 @@ class Tuner:
             frequencyDifference.universe, [150, 300, 600]
         )
         frequencyDifference["far"] = fuzz.trimf(
-            frequencyDifference.universe, [500, 1000, 19800]
+            frequencyDifference.universe, [500, 1000, maxFrecuency * 1.5]
         )
 
         return frequencyDifference
@@ -195,9 +197,106 @@ class Tuner:
 
         return turn
 
+    def showAntecedentFrequency(self) -> None:
+        """
+        Show the antecedent for the frequency difference.
+
+        Args:
+            - None
+
+        Returns:
+            - None
+        """
+        self.antecedentFrequency().view()
+
+    def showAntecedentLength(self) -> None:
+        """
+        Show the antecedent for the string length.
+
+        Args:
+            - None
+
+        Returns:
+            - None
+        """
+        self.antecedentLength().view()
+
+    def showConsequentTurn(self) -> None:
+        """
+        Show the consequent for the turn.
+
+        Args:
+            - None
+
+        Returns:
+            - None
+        """
+        self.consequentTurn().view()
+
+    def showControlSpace(self) -> None:
+        """
+        Show the control space for the fuzzy controller.
+
+        Args:
+            - None
+
+        Returns:
+            - None
+        """
+        frequencyDifference = self.antecedentFrequency()
+        stringLength = self.antecedentLength()
+
+        frequencies = frequencyDifference.universe[:100]
+        lengths = stringLength.universe
+
+        # Create a meshgrid of frequencies and lengths
+        frequency_grid, length_grid = np.meshgrid(frequencies, lengths)
+
+        # Create an array filled with zeros of the same shape as frequency_grid and length_grid
+        turns = [0] * len(frequencies) * len(lengths)
+
+        with ProcessPoolExecutor() as executor:
+            for i, (f, l) in enumerate(
+                zip(frequency_grid.flatten(), length_grid.flatten())
+            ):
+                turns[i] = executor.submit(self.calculateTurn, f, l)
+
+        turns = [turn.result() for turn in turns]
+
+        turns = np.array(turns).reshape(frequency_grid.shape)
+
+        # Initialize a 3D plot
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection="3d")
+
+        # Plot the surface
+        ax.plot_surface(frequency_grid, length_grid, turns, cmap="viridis")
+
+        # Add labels
+        ax.set_xlabel("Frequency")
+        ax.set_ylabel("String Length")
+        ax.set_zlabel("Turns")
+
+        # Initialize a 2D plot
+        plt.figure()
+        plt.imshow(
+            turns,
+            extent=(frequencies.min(), frequencies.max(), lengths.min(), lengths.max()),
+            origin="lower",
+            aspect="auto",
+            cmap="viridis",
+        )
+        plt.colorbar(label="Turns")
+        plt.xlabel("Frequency")
+        plt.ylabel("String Length")
+        plt.title("Heatmap of Turns for Frequency and Length")
+
+        # Display the plot
+        plt.show()
+
 
 if __name__ == "__main__":
     turner = Tuner()
-    turner.createRules(
-        turner.antecedentFrequency(), turner.antecedentLength(), turner.consequentTurn()
-    )
+
+    turner.showControlSpace()
+    plt.show()
