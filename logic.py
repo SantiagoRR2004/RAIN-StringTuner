@@ -243,56 +243,88 @@ class Tuner:
         Returns:
             - None
         """
+
+        def createGraphs(
+            frequency_grid: np.array, length_grid: np.array, turns: np.array
+        ) -> None:
+            """
+            Create the graphs for the control space.
+
+            Args:
+                - frequency_grid:
+                - length_grid:
+                - turns:
+
+            Returns:
+                - None
+            """
+            # Initialize a 3D plot
+            fig = plt.figure()
+            ax = fig.add_subplot(111, projection="3d")
+
+            # Plot the surface
+            ax.plot_surface(frequency_grid, length_grid, turns, cmap="viridis")
+
+            # Add labels
+            ax.set_xlabel("Frequency")
+            ax.set_ylabel("String Length")
+            ax.set_zlabel("Turns")
+
+            # Initialize a 2D plot
+            plt.figure()
+            plt.imshow(
+                turns,
+                extent=(
+                    frequencies.min(),
+                    frequencies.max(),
+                    lengths.min(),
+                    lengths.max(),
+                ),
+                origin="lower",
+                aspect="auto",
+                cmap="viridis",
+            )
+            plt.colorbar(label="Turns")
+            plt.xlabel("Frequency")
+            plt.ylabel("String Length")
+            plt.title("Heatmap of Turns for Frequency and Length")
+
         frequencyDifference = self.antecedentFrequency()
         stringLength = self.antecedentLength()
 
-        frequencies = frequencyDifference.universe[:100]
+        # Define the full range of frequencies and lengths
+        frequenciesAll = frequencyDifference.universe
         lengths = stringLength.universe
 
-        # Create a meshgrid of frequencies and lengths
-        frequency_grid, length_grid = np.meshgrid(frequencies, lengths)
+        batchSize = 50
+        nBatches = len(frequenciesAll) // batchSize
 
-        # Create an array filled with zeros of the same shape as frequency_grid and length_grid
-        turns = [0] * len(frequencies) * len(lengths)
+        for batch_index in range(nBatches):
+            # Extract the current batch of 50 frequencies
+            start = batch_index * batchSize
+            end = start + batchSize
+            frequencies = frequenciesAll[start:end]
 
-        with ProcessPoolExecutor() as executor:
-            for i, (f, l) in enumerate(
-                zip(frequency_grid.flatten(), length_grid.flatten())
-            ):
-                turns[i] = executor.submit(self.calculateTurn, f, l)
+            # Create a meshgrid of frequencies and lengths
+            frequency_grid, length_grid = np.meshgrid(frequencies, lengths)
 
-        turns = [turn.result() for turn in turns]
+            # Create an array filled with zeros of the same shape as frequency_grid and length_grid
+            turns = [0] * len(frequencies) * len(lengths)
 
-        turns = np.array(turns).reshape(frequency_grid.shape)
+            with ProcessPoolExecutor() as executor:
+                for i, (f, l) in enumerate(
+                    zip(frequency_grid.flatten(), length_grid.flatten())
+                ):
+                    turns[i] = executor.submit(self.calculateTurn, f, l)
 
-        # Initialize a 3D plot
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection="3d")
+            turns = [turn.result() for turn in turns]
 
-        # Plot the surface
-        ax.plot_surface(frequency_grid, length_grid, turns, cmap="viridis")
+            turns = np.array(turns).reshape(frequency_grid.shape)
 
-        # Add labels
-        ax.set_xlabel("Frequency")
-        ax.set_ylabel("String Length")
-        ax.set_zlabel("Turns")
+            createGraphs(frequency_grid, length_grid, turns)
 
-        # Initialize a 2D plot
-        plt.figure()
-        plt.imshow(
-            turns,
-            extent=(frequencies.min(), frequencies.max(), lengths.min(), lengths.max()),
-            origin="lower",
-            aspect="auto",
-            cmap="viridis",
-        )
-        plt.colorbar(label="Turns")
-        plt.xlabel("Frequency")
-        plt.ylabel("String Length")
-        plt.title("Heatmap of Turns for Frequency and Length")
-
-        # Display the plot
-        plt.show()
+            # Display the plots
+            plt.show()
 
 
 if __name__ == "__main__":
