@@ -50,8 +50,8 @@ class Tuner:
             frequencyDifference.universe, [500, 2000, 20000, 20000]
         )
         
-        stringLength["small"] = fuzz.trapmf(stringLength.universe, [0.08, 0.08, 0.2, 0.6])
-        stringLength["medium"] = fuzz.trapmf(stringLength.universe, [0.08, 0.5, 0.7, 1.2])
+        stringLength["small"] = fuzz.trapmf(stringLength.universe, [0.08, 0.08, 0.4, 0.7])
+        stringLength["medium"] = fuzz.trapmf(stringLength.universe, [0.3, 0.55, 0.75, 1])
         stringLength["long"] = fuzz.trapmf(stringLength.universe, [0.6, 1, 1.2, 1.2])
 
 
