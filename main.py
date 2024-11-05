@@ -3,4 +3,4 @@ import harplike
 
 if __name__ == "__main__":
     guitar = guitars.ClassicalGuitar()
-    guitar.tune(True)
+    guitar.tune()

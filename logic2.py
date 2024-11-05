@@ -35,29 +35,30 @@ class Tuner:
             np.arange(minLength, maxLength, 0.01), "stringLength"
         )
 
-        turn = ctrl.Consequent(np.arange(0, 1.1, 0.01), "turn")
+        turn = ctrl.Consequent(np.arange(0, 1.1, 0.001), "turn")
 
         frequencyDifference["very_close"] = fuzz.trapmf(
-            frequencyDifference.universe, [0, 0, 50, 100]
+            frequencyDifference.universe, [0, 0, 20, 80]
         )
         frequencyDifference["close"] = fuzz.trapmf(
-            frequencyDifference.universe, [50, 100, 150, 250]
+            frequencyDifference.universe, [20, 80, 100, 200]
         )
         frequencyDifference["medium"] = fuzz.trapmf(
-            frequencyDifference.universe, [150, 350, 500, 1000]
+            frequencyDifference.universe, [100, 250, 500, 1000]
         )
         frequencyDifference["far"] = fuzz.trapmf(
             frequencyDifference.universe, [500, 2000, 20000, 20000]
         )
         
-        stringLength["small"] = fuzz.trimf(stringLength.universe, [0.08, 0.08, 0.6])
-        stringLength["medium"] = fuzz.trimf(stringLength.universe, [0.08, 0.6, 1.2])
-        stringLength["long"] = fuzz.trimf(stringLength.universe, [0.6, 1.2, 1.2])
+        stringLength["small"] = fuzz.trapmf(stringLength.universe, [0.08, 0.08, 0.2, 0.6])
+        stringLength["medium"] = fuzz.trapmf(stringLength.universe, [0.08, 0.5, 0.7, 1.2])
+        stringLength["long"] = fuzz.trapmf(stringLength.universe, [0.6, 1, 1.2, 1.2])
 
 
-        #subirles algo al very_little y al very_close y crear un very_very
-        turn["very_little"] = fuzz.trapmf(turn.universe, [0, 0, 0.02, 0.1])
-        turn["little"] = fuzz.trapmf(turn.universe, [0.02, 0.1, 0.25, 0.4])
+
+        turn["very_very_little"] = fuzz.trapmf(turn.universe, [0, 0, 0.003, 0.01])
+        turn["very_little"] = fuzz.trapmf(turn.universe, [0, 0, 0.05, 0.1])
+        turn["little"] = fuzz.trapmf(turn.universe, [0.05, 0.1, 0.25, 0.4])
         turn["medium"] = fuzz.trapmf(turn.universe, [0.25, 0.4, 0.6, 0.8])
         turn["large"] = fuzz.trapmf(turn.universe, [0.6, 0.8, 1, 1])
         
@@ -65,7 +66,7 @@ class Tuner:
         # Reglas difusas
         rule1 = ctrl.Rule(
             frequencyDifference["very_close"] & stringLength["small"],
-            turn["very_little"]
+            turn["very_very_little"]
         )
         rule2 = ctrl.Rule(
             frequencyDifference["very_close"] & stringLength["medium"],
@@ -89,7 +90,7 @@ class Tuner:
         )
         rule7 = ctrl.Rule(
             frequencyDifference["medium"] & stringLength["small"],
-            turn["medium"]
+            turn["little"]
         )
         rule8 = ctrl.Rule(
             frequencyDifference["medium"] & stringLength["medium"],
@@ -101,7 +102,7 @@ class Tuner:
         )
         rule10 = ctrl.Rule(
             frequencyDifference["far"] & stringLength["small"],
-            turn["large"]
+            turn["medium"]
         )
         rule11 = ctrl.Rule(
             frequencyDifference["far"] & stringLength["medium"],
@@ -116,6 +117,11 @@ class Tuner:
             [rule1, rule2, rule3, rule4, rule5, rule6, rule7, rule8, rule9,
              rule10, rule11, rule12]
         )
+
+        #https://scikit-fuzzy.github.io/scikit-fuzzy/auto_examples/plot_defuzzify.html
+        #tenemos centroid por defecto, además de mom, som, lom y bisector
+        turn.defuzzify_method = "mom" #medium of maximum
+
         turner = ctrl.ControlSystemSimulation(turn_ctrl)
 
         return turner
@@ -136,6 +142,8 @@ class Tuner:
         self.tuner.input["stringLength"] = stringLength
 
         self.tuner.compute()
+
+        print(self.tuner.output["turn"])
 
         return self.tuner.output["turn"]
 
