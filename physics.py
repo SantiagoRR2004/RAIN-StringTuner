@@ -104,3 +104,31 @@ def calculateStringNewFrequency(
         ((youngModulus * lengthDifference * newLength) / (density * origLength**2))
         ** (1 / 2)
     ) / (2 * origLength)
+
+
+def calculateNewLengthByFrequency(
+    initialLength: float, frequency: float, youngModulus: float, density: float
+) -> float:
+    """
+    We calculate the length of the stretched string so it gives a certain frequency.
+
+    The formula is derived from calculateStringNewFrequency() solving for the new length.
+
+
+    Args:
+        - initialLength (float): The initial length of the string in meters.
+        - frequency (float): The frequency of the string in hertz.
+        - youngModulus (float): The Young's modulus of the string in pascals.
+        - density (float): The density of the string in kilograms per cubic meter.
+
+    Returns:
+        - float: The new length of the string in meters.
+    """
+    return (
+        initialLength
+        + (
+            initialLength**2
+            + (16 * density * frequency**2 * initialLength**4) / youngModulus
+        )
+        ** (1 / 2)
+    ) / 2

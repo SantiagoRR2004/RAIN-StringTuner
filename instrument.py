@@ -29,8 +29,34 @@ class Instrument(abc.ABC):
             - None
         """
         self.stringFrequencies = np.zeros(len(self.frequencies))
-        self.stringLengths = self.lengths.copy()
+        self.calculateTightness()
         self.checker()
+
+    def calculateTightness(self) -> None:
+        """
+        Calculate the tightness of the strings.
+
+        It requires the following attributes to be already defined:
+            - stringFrequencies (list): The frequencies of the strings in hertz.
+            - lengths (list): The initial lengths of the strings in meters.
+            - youngModulus (float): The young modulus of the strings in pascals.
+            - density (float): The density of the strings in kilograms per cubic meter.
+
+        Args:
+            - None
+
+        Returns:
+            - None
+        """
+        self.stringLengths = [
+            physics.calculateNewLengthByFrequency(
+                self.lengths[i],
+                self.stringFrequencies[i],
+                self.youngModulus,
+                self.density,
+            )
+            for i in range(len(self.frequencies))
+        ]
 
     def checker(self) -> None:
         """
