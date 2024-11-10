@@ -2,6 +2,8 @@ import skfuzzy as fuzz
 from skfuzzy import control as ctrl
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+import os
 from concurrent.futures import ProcessPoolExecutor
 
 
@@ -244,50 +246,109 @@ class Tuner:
             - None
         """
 
-        def createGraphs(
-            frequency_grid: np.array, length_grid: np.array, turns: np.array
-        ) -> None:
-            """
-            Create the graphs for the control space.
+        if not os.path.exists("turns.parquet"):
+            self.createDataframe()
 
-            Args:
-                - frequency_grid:
-                - length_grid:
-                - turns:
+        data = pd.read_parquet("turns.parquet")
 
-            Returns:
-                - None
-            """
-            # Initialize a 3D plot
-            fig = plt.figure()
-            ax = fig.add_subplot(111, projection="3d")
+        # We check that the Dataframe is up to date
+        repeat = False
 
-            # Plot the surface
-            ax.plot_surface(frequency_grid, length_grid, turns, cmap="viridis")
+        if np.array_equal(self.antecedentFrequency().universe, data.index.values):
+            diff = np.where(self.antecedentFrequency().universe != data.index.values)
+            if diff[0].size > 0:
+                repeat = True
+                print(
+                    "Not the same frequencyDifference range. Need to update the Dataframe."
+                )
 
-            # Add labels
-            ax.set_xlabel("Frequency")
-            ax.set_ylabel("String Length")
-            ax.set_zlabel("Turns")
+        if np.allclose(self.antecedentLength().universe, data.columns.values):
+            diff = np.where(self.antecedentLength().universe != data.columns.values)
+            if diff[0].size > 0:
+                repeat = True
+                print("Not the same stringLength range. Need to update the Dataframe.")
 
-            # Initialize a 2D plot
-            plt.figure()
-            plt.imshow(
-                turns,
-                extent=(
-                    frequencies.min(),
-                    frequencies.max(),
-                    lengths.min(),
-                    lengths.max(),
-                ),
-                origin="lower",
-                aspect="auto",
-                cmap="viridis",
-            )
-            plt.colorbar(label="Turns")
-            plt.xlabel("Frequency")
-            plt.ylabel("String Length")
-            plt.title("Heatmap of Turns for Frequency and Length")
+        # We check 100 values to see if they are correct
+        for _ in range(100):
+            frequency = np.random.choice(data.index.values)
+            length = np.random.choice(data.columns.values)
+            turn = self.calculateTurn(frequency, length)
+            if turn != data.loc[frequency, length]:
+                repeat = True
+                print("Not the same calculations. Need to update the Dataframe.")
+                break
+
+        # # We create the Dataframe again if it is not up to date
+        # if repeat:
+        #     del data
+        #     self.createDataframe()
+        #     data = pd.read_parquet("turns.parquet")
+
+        self.createGraphs(data)
+
+        plt.show()
+
+    def createGraphs(self, dataFrame: pd.DataFrame) -> None:
+        """
+        Create the graphs for the control space.
+
+        Args:
+            - dataFrame (pd.DataFrame): The DataFrame with the turns for all the possible
+                                        combinations of frequencies and lengths.
+        Returns:
+            - None
+        """
+        # Extract frequency, length, and turns from the DataFrame
+        frequencies = dataFrame.index.values
+        lengths = dataFrame.columns.values
+        turns = dataFrame.values
+
+        # Create a meshgrid for 3D plotting
+        # freq_grid, length_grid = np.meshgrid(frequencies, lengths)
+        length_grid, freq_grid = np.meshgrid(lengths, frequencies)
+
+        # Initialize a 3D plot
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection="3d")
+
+        # Plot the surface
+        ax.plot_surface(freq_grid, length_grid, turns, cmap="viridis")
+
+        # Add labels
+        ax.set_xlabel("Frequency")
+        ax.set_ylabel("String Length")
+        ax.set_zlabel("Turns")
+
+        # Initialize a 2D plot
+        plt.figure()
+        plt.imshow(
+            turns.T,
+            extent=(
+                frequencies.min(),
+                frequencies.max(),
+                lengths.min(),
+                lengths.max(),
+            ),
+            origin="lower",
+            aspect="auto",
+            cmap="viridis",
+        )
+        plt.colorbar(label="Turns")
+        plt.xlabel("Frequency")
+        plt.ylabel("String Length")
+        plt.title("Heatmap of Turns for Frequency and Length")
+
+    def createDataframe(self) -> None:
+        """
+        Create a DataFrame with the turns for all the possible
+        combinations of frequencies and lengths.
+
+        Args:
+            - None
+
+        Returns:
+            - None
+        """
 
         frequencyDifference = self.antecedentFrequency()
         stringLength = self.antecedentLength()
@@ -298,6 +359,7 @@ class Tuner:
 
         batchSize = 50
         nBatches = len(frequenciesAll) // batchSize
+        all_turns = []
 
         for batch_index in range(nBatches):
             # Extract the current batch of 50 frequencies
@@ -306,7 +368,9 @@ class Tuner:
             frequencies = frequenciesAll[start:end]
 
             # Create a meshgrid of frequencies and lengths
-            frequency_grid, length_grid = np.meshgrid(frequencies, lengths)
+            frequency_grid, length_grid = np.meshgrid(
+                frequencies, lengths, indexing="ij"
+            )
 
             # Create an array filled with zeros of the same shape as frequency_grid and length_grid
             turns = [0] * len(frequencies) * len(lengths)
@@ -321,14 +385,19 @@ class Tuner:
 
             turns = np.array(turns).reshape(frequency_grid.shape)
 
-            createGraphs(frequency_grid, length_grid, turns)
+            batch_df = pd.DataFrame(turns, index=frequencies, columns=lengths)
+            all_turns.append(batch_df)
 
-            # Display the plots
-            plt.show()
+            print(f"Batch {batch_index + 1}/{nBatches} done")
+
+        # Concatenate all batches to form the full DataFrame
+        full_df = pd.concat(all_turns, axis=0)
+
+        # Save the DataFrame to a Parquet file
+        full_df.to_parquet("turns.parquet")
 
 
 if __name__ == "__main__":
     turner = Tuner()
 
     turner.showControlSpace()
-    plt.show()
