@@ -1,7 +1,7 @@
 import abc
 import sound
 import physics
-import logic2 as logic
+import logic
 import numpy as np
 
 
