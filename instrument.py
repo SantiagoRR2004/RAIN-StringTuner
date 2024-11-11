@@ -3,6 +3,7 @@ import sound
 import physics
 import logic
 import numpy as np
+import time
 
 
 class Instrument(abc.ABC):
@@ -115,7 +116,7 @@ class Instrument(abc.ABC):
         self.checker()
         sound.playStrum(self.frequencies)
 
-    def tune(self, soundEnabled: bool = False) -> list:
+    def tune(self, soundEnabled: bool = False, timeLimit: int = 0, verbose: bool = False) -> list:
         """
         Tune the instrument.
 
@@ -127,6 +128,8 @@ class Instrument(abc.ABC):
 
         Args:
             - soundEnabled (bool): A boolean that indicates if the sound is enabled.
+            - timeLimit (int): The time limit for the tuning process in seconds.
+            - verbose (bool): A boolean that indicates if the tuning process is verbose.
 
         Returns:
             - list: A list of the turns that were made to tune the instrument.
@@ -134,11 +137,14 @@ class Instrument(abc.ABC):
                     of string tunning.
         """
         turns = []
+        if timeLimit:
+            startTime = time.time()
         while np.any(
             np.abs(self.frequencies - self.stringFrequencies)
             > self.frequencyDiscrimination
         ):
-            print(self.stringFrequencies)
+            if verbose:
+                print(self.stringFrequencies)
             if soundEnabled:
                 self.play()
 
@@ -149,7 +155,7 @@ class Instrument(abc.ABC):
                 if abs(difference) > self.frequencyDiscrimination:
 
                     turn = self.turner.tune(
-                        self.frequencies[i], self.stringFrequencies[i], self.lengths[i]
+                        self.frequencies[i], self.stringFrequencies[i], self.lengths[i], verbose
                     )
 
                     turnIteration[i] = turn
@@ -169,5 +175,8 @@ class Instrument(abc.ABC):
                     self.stringLengths[i] = newLength
 
             turns.append(turnIteration)
+            if timeLimit:
+                if time.time() - startTime > timeLimit:
+                    raise TimeoutError("Time limit exceeded")
 
         return turns
