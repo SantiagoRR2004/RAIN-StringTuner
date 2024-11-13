@@ -17,13 +17,25 @@ aceptance = [
 
 
 def ensureNumber(question: str) -> float:
+    """
+    Ensure that the user enters a valid number.
 
-    toret = input(question)
+    Args:
+        - question (str): The question to ask the user.
 
-    while toret.isnumeric() == False:
-        toret = input("Por favor, introduzca un número: ")
+    Returns:
+        - float: The number entered by the user.
+    """
+    while True:
+        toret = input(question)
 
-    return float(toret)
+        try:
+            return float(toret)  # Try to convert input to float
+
+        except ValueError:
+            print(
+                "Por favor, introduzca un número válido."
+            )  # Inform the user if input is not a valid number
 
 
 if __name__ == "__main__":
