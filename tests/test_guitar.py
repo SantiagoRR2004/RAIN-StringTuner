@@ -25,10 +25,8 @@ class test_guitar(unittest.TestCase):
                 print(f"Prueba con length {length} no completada en tiempo")
 
         if valores_no_terminados:
-            self.fail(f"La función no terminó en el tiempo estipulado para los valores: {valores_no_terminados}")
+            self.fail(
+                f"La función no terminó en el tiempo estipulado para los valores: {valores_no_terminados}"
+            )
         else:
             print("La función terminó en el tiempo estipulado para todos los valores.")
-
-# Ejecución del test
-if __name__ == "__main__":
-    unittest.main()

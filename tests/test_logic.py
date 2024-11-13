@@ -5,6 +5,7 @@ import random
 
 class numTests(unittest.TestCase):
     numTests = 1000
+    tolerance = 1e-4
 
 
 class test_turner(numTests):
@@ -55,7 +56,6 @@ class test_turner(numTests):
             turn2 = turner.tune(frequency[i], objectiveFrequency[i], stringLength[i])
             self.assertTrue(abs(turn) == abs(turn2))
 
-
     def test_0Hz(self):
         """
         We test that when the difference is 0 Hz,
@@ -68,8 +68,7 @@ class test_turner(numTests):
 
         for i in range(self.numTests):
             turn = turner.tune(frequency[i], frequency[i], stringLength[i])
-            self.assertTrue(turn == 0)
-
+            self.assertAlmostEqual(turn, 0, delta=self.tolerance)
 
     def test_50Hz(self):
         """

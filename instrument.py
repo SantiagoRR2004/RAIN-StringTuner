@@ -116,7 +116,9 @@ class Instrument(abc.ABC):
         self.checker()
         sound.playStrum(self.frequencies)
 
-    def tune(self, soundEnabled: bool = False, timeLimit: int = 0, verbose: bool = False) -> list:
+    def tune(
+        self, *, soundEnabled: bool = False, timeLimit: int = 0, verbose: bool = False
+    ) -> list:
         """
         Tune the instrument.
 
@@ -155,7 +157,10 @@ class Instrument(abc.ABC):
                 if abs(difference) > self.frequencyDiscrimination:
 
                     turn = self.turner.tune(
-                        self.frequencies[i], self.stringFrequencies[i], self.lengths[i], verbose
+                        self.frequencies[i],
+                        self.stringFrequencies[i],
+                        self.lengths[i],
+                        verbose,
                     )
 
                     turnIteration[i] = turn

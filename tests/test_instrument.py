@@ -6,6 +6,7 @@ import harplike
 
 class numTests(unittest.TestCase):
     numTests = 100
+    timelimit = 10
 
 
 class test_instrument(numTests):
@@ -31,7 +32,7 @@ class test_instrument(numTests):
 
             guitar.calculateTightness()
 
-            self.assertLessEqual(len(guitar.tune()), 5)
+            self.assertLessEqual(len(guitar.tune(timeLimit=self.timelimit)), 5)
 
     def test_12TurnsHarp(self):
         """
@@ -42,4 +43,4 @@ class test_instrument(numTests):
 
         harp = harplike.Harp36String()
 
-        self.assertLessEqual(len(harp.tune()), 12)
+        self.assertLessEqual(len(harp.tune(timeLimit=self.timelimit)), 12)
