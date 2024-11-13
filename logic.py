@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import os
 from concurrent.futures import ProcessPoolExecutor
+from tqdm import tqdm
 
 
 class Tuner:
@@ -309,6 +310,7 @@ class Tuner:
             - None
         """
         self.antecedentFrequency().view()
+        plt.title("Frequency Difference")
 
     def showAntecedentLength(self) -> None:
         """
@@ -321,6 +323,7 @@ class Tuner:
             - None
         """
         self.antecedentLength().view()
+        plt.title("String Length")
 
     def showConsequentTurn(self) -> None:
         """
@@ -333,6 +336,21 @@ class Tuner:
             - None
         """
         self.consequentTurn().view()
+        plt.title("Turn")
+
+    def showAntecedentsAndConsequents(self) -> None:
+        """
+        Show the antecedents and consequents for the fuzzy controller.
+
+        Args:
+            - None
+
+        Returns:
+            - None
+        """
+        self.showAntecedentFrequency()
+        self.showAntecedentLength()
+        self.showConsequentTurn()
 
     def showControlSpace(self) -> None:
         """
@@ -460,7 +478,7 @@ class Tuner:
         nBatches = len(frequenciesAll) // batchSize
         all_turns = []
 
-        for batch_index in range(nBatches):
+        for batch_index in tqdm(range(nBatches), desc="Processing Batches"):
             # Extract the current batch of 50 frequencies
             start = batch_index * batchSize
             end = start + batchSize
@@ -487,8 +505,6 @@ class Tuner:
             batch_df = pd.DataFrame(turns, index=frequencies, columns=lengths)
             all_turns.append(batch_df)
 
-            print(f"Batch {batch_index + 1}/{nBatches} done")
-
         # Concatenate all batches to form the full DataFrame
         full_df = pd.concat(all_turns, axis=0)
 
@@ -498,5 +514,7 @@ class Tuner:
 
 if __name__ == "__main__":
     turner = Tuner()
+
+    turner.showAntecedentsAndConsequents()
 
     turner.showControlSpace()
