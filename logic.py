@@ -49,7 +49,8 @@ class Tuner:
             frequencyDifference.universe, [100, 250, 500, 1000]
         )
         frequencyDifference["far"] = fuzz.trapmf(
-            frequencyDifference.universe, [500, 2000, 20000, 20000]
+            frequencyDifference.universe,
+            [500, 2000, maxFrecuency - minFrecuency, maxFrecuency - minFrecuency],
         )
 
         return frequencyDifference
@@ -401,11 +402,26 @@ class Tuner:
         #     self.createDataframe()
         #     data = pd.read_parquet("turns.parquet")
 
+        frequencyDifference = self.antecedentFrequency()
+        fUni = frequencyDifference.universe
+
+        for name, term in frequencyDifference.terms.items():
+
+            self.createGraphs(
+                data.loc[fUni[term.mf > 0]],
+                title=f"Heatmap of Turns for Frequency {name} and Length",
+            )
+
         self.createGraphs(data)
 
         plt.show()
 
-    def createGraphs(self, dataFrame: pd.DataFrame) -> None:
+    def createGraphs(
+        self,
+        dataFrame: pd.DataFrame,
+        *,
+        title: str = "Heatmap of Turns for Frequency and Length",
+    ) -> None:
         """
         Create the graphs for the control space.
 
@@ -426,6 +442,7 @@ class Tuner:
 
         # Initialize a 3D plot
         fig = plt.figure()
+        fig.canvas.manager.set_window_title(f"3D {title}")
         ax = fig.add_subplot(111, projection="3d")
 
         # Plot the surface
@@ -435,9 +452,11 @@ class Tuner:
         ax.set_xlabel("Frequency")
         ax.set_ylabel("String Length")
         ax.set_zlabel("Turns")
+        ax.set_title(title)
 
         # Initialize a 2D plot
-        plt.figure()
+        fig = plt.figure()
+        fig.canvas.manager.set_window_title(f"2D {title}")
         plt.imshow(
             turns.T,
             extent=(
@@ -453,7 +472,7 @@ class Tuner:
         plt.colorbar(label="Turns")
         plt.xlabel("Frequency")
         plt.ylabel("String Length")
-        plt.title("Heatmap of Turns for Frequency and Length")
+        plt.title(title)
 
     def createDataframe(self) -> None:
         """
