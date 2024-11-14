@@ -49,8 +49,7 @@ class Tuner:
             frequencyDifference.universe, [100, 250, 500, 1000]
         )
         frequencyDifference["far"] = fuzz.trapmf(
-            frequencyDifference.universe,
-            [500, 2000, maxFrecuency - minFrecuency, maxFrecuency - minFrecuency],
+            frequencyDifference.universe, [500, 2000, 20000, 20000]
         )
 
         return frequencyDifference
@@ -73,12 +72,10 @@ class Tuner:
             np.arange(minLength, maxLength, 0.01), "stringLength"
         )
 
-        stringLength["small"] = fuzz.trapmf(
-            stringLength.universe, [0.08, 0.08, 0.4, 0.7]
-        )
-        stringLength["medium"] = fuzz.trapmf(stringLength.universe, [0.4, 0.6, 0.8, 1])
+        stringLength["small"] = fuzz.trapmf(stringLength.universe, [0.08, 0.08, 0.2, 0.5])
+        stringLength["medium_small"] = fuzz.trapmf(stringLength.universe, [0.1, 0.4, 0.6, 0.8])
+        stringLength["medium_long"] = fuzz.trapmf(stringLength.universe, [0.4, 0.6, 1, 1.1])
         stringLength["long"] = fuzz.trapmf(stringLength.universe, [0.8, 1, 1.2, 1.2])
-
         return stringLength
 
     def consequentTurn(self) -> ctrl.Consequent:
@@ -124,37 +121,50 @@ class Tuner:
             turn["very_very_little"],
         )
         rule2 = ctrl.Rule(
-            frequencyDifference["very_close"] & stringLength["medium"],
-            turn["very_little"],
+            frequencyDifference["close"] & stringLength["small"], turn["very_very_little"]
         )
         rule3 = ctrl.Rule(
-            frequencyDifference["very_close"] & stringLength["long"], turn["little"]
-        )
-        rule4 = ctrl.Rule(
-            frequencyDifference["close"] & stringLength["small"], turn["very_little"]
-        )
-        rule5 = ctrl.Rule(
-            frequencyDifference["close"] & stringLength["medium"], turn["little"]
-        )
-        rule6 = ctrl.Rule(
-            frequencyDifference["close"] & stringLength["long"], turn["medium"]
-        )
-        rule7 = ctrl.Rule(
             frequencyDifference["medium"] & stringLength["small"], turn["little"]
         )
-        rule8 = ctrl.Rule(
-            frequencyDifference["medium"] & stringLength["medium"], turn["medium"]
-        )
-        rule9 = ctrl.Rule(
-            frequencyDifference["medium"] & stringLength["long"], turn["large"]
-        )
-        rule10 = ctrl.Rule(
+        rule4 = ctrl.Rule(
             frequencyDifference["far"] & stringLength["small"], turn["medium"]
         )
+        rule5 = ctrl.Rule(
+            frequencyDifference["very_close"] & stringLength["medium_small"],
+            turn["very_very_little"],
+        )
+        rule6 = ctrl.Rule(
+            frequencyDifference["close"] & stringLength["medium_small"], turn["very_little"]
+        )
+        rule7 = ctrl.Rule(
+            frequencyDifference["medium"] & stringLength["medium_small"], turn["little"]
+        )
+        rule8 = ctrl.Rule(
+            frequencyDifference["far"] & stringLength["medium_small"], turn["medium"]
+        )
+        rule9 = ctrl.Rule(
+            frequencyDifference["very_close"] & stringLength["medium_long"],
+            turn["very_little"],
+        )
+        rule10 = ctrl.Rule(
+            frequencyDifference["close"] & stringLength["medium_long"], turn["little"]
+        )
         rule11 = ctrl.Rule(
-            frequencyDifference["far"] & stringLength["medium"], turn["large"]
+            frequencyDifference["medium"] & stringLength["medium_long"], turn["medium"]
         )
         rule12 = ctrl.Rule(
+            frequencyDifference["far"] & stringLength["medium_long"], turn["large"]
+        )
+        rule13 = ctrl.Rule(
+            frequencyDifference["very_close"] & stringLength["long"], turn["little"]
+        )        
+        rule14 = ctrl.Rule(
+            frequencyDifference["close"] & stringLength["long"], turn["medium"]
+        )
+        rule15 = ctrl.Rule(
+            frequencyDifference["medium"] & stringLength["long"], turn["large"]
+        )
+        rule16 = ctrl.Rule(
             frequencyDifference["far"] & stringLength["long"], turn["large"]
         )
 
@@ -172,6 +182,10 @@ class Tuner:
                 rule10,
                 rule11,
                 rule12,
+                rule13,
+                rule14,
+                rule15,                
+                rule16
             ]
         )
         return turn_ctrl
@@ -402,26 +416,11 @@ class Tuner:
         #     self.createDataframe()
         #     data = pd.read_parquet("turns.parquet")
 
-        frequencyDifference = self.antecedentFrequency()
-        fUni = frequencyDifference.universe
-
-        for name, term in frequencyDifference.terms.items():
-
-            self.createGraphs(
-                data.loc[fUni[term.mf > 0]],
-                title=f"Heatmap of Turns for Frequency {name} and Length",
-            )
-
         self.createGraphs(data)
 
         plt.show()
 
-    def createGraphs(
-        self,
-        dataFrame: pd.DataFrame,
-        *,
-        title: str = "Heatmap of Turns for Frequency and Length",
-    ) -> None:
+    def createGraphs(self, dataFrame: pd.DataFrame) -> None:
         """
         Create the graphs for the control space.
 
@@ -442,7 +441,6 @@ class Tuner:
 
         # Initialize a 3D plot
         fig = plt.figure()
-        fig.canvas.manager.set_window_title(f"3D {title}")
         ax = fig.add_subplot(111, projection="3d")
 
         # Plot the surface
@@ -452,11 +450,9 @@ class Tuner:
         ax.set_xlabel("Frequency")
         ax.set_ylabel("String Length")
         ax.set_zlabel("Turns")
-        ax.set_title(title)
 
         # Initialize a 2D plot
-        fig = plt.figure()
-        fig.canvas.manager.set_window_title(f"2D {title}")
+        plt.figure()
         plt.imshow(
             turns.T,
             extent=(
@@ -472,7 +468,7 @@ class Tuner:
         plt.colorbar(label="Turns")
         plt.xlabel("Frequency")
         plt.ylabel("String Length")
-        plt.title(title)
+        plt.title("Heatmap of Turns for Frequency and Length")
 
     def createDataframe(self) -> None:
         """

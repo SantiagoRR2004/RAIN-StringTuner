@@ -30,6 +30,7 @@ class Instrument(abc.ABC):
             - None
         """
         self.stringFrequencies = np.zeros(len(self.frequencies))
+        #self.stringFrequencies.fill(100)
         self.calculateTightness()
         self.checker()
 
