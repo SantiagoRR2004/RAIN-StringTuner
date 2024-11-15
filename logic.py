@@ -49,7 +49,8 @@ class Tuner:
             frequencyDifference.universe, [100, 250, 500, 1000]
         )
         frequencyDifference["far"] = fuzz.trapmf(
-            frequencyDifference.universe, [500, 2000, 20000, 20000]
+            frequencyDifference.universe,
+            [500, 2000, maxFrecuency - minFrecuency, maxFrecuency - minFrecuency],
         )
 
         return frequencyDifference
@@ -72,9 +73,15 @@ class Tuner:
             np.arange(minLength, maxLength, 0.01), "stringLength"
         )
 
-        stringLength["small"] = fuzz.trapmf(stringLength.universe, [0.08, 0.08, 0.2, 0.5])
-        stringLength["medium_small"] = fuzz.trapmf(stringLength.universe, [0.1, 0.4, 0.6, 0.8])
-        stringLength["medium_long"] = fuzz.trapmf(stringLength.universe, [0.4, 0.6, 1, 1.1])
+        stringLength["small"] = fuzz.trapmf(
+            stringLength.universe, [0.08, 0.08, 0.2, 0.5]
+        )
+        stringLength["medium_small"] = fuzz.trapmf(
+            stringLength.universe, [0.1, 0.4, 0.6, 0.8]
+        )
+        stringLength["medium_long"] = fuzz.trapmf(
+            stringLength.universe, [0.4, 0.6, 1, 1.1]
+        )
         stringLength["long"] = fuzz.trapmf(stringLength.universe, [0.8, 1, 1.2, 1.2])
         return stringLength
 
@@ -121,7 +128,8 @@ class Tuner:
             turn["very_very_little"],
         )
         rule2 = ctrl.Rule(
-            frequencyDifference["close"] & stringLength["small"], turn["very_very_little"]
+            frequencyDifference["close"] & stringLength["small"],
+            turn["very_very_little"],
         )
         rule3 = ctrl.Rule(
             frequencyDifference["medium"] & stringLength["small"], turn["little"]
@@ -134,7 +142,8 @@ class Tuner:
             turn["very_very_little"],
         )
         rule6 = ctrl.Rule(
-            frequencyDifference["close"] & stringLength["medium_small"], turn["very_little"]
+            frequencyDifference["close"] & stringLength["medium_small"],
+            turn["very_little"],
         )
         rule7 = ctrl.Rule(
             frequencyDifference["medium"] & stringLength["medium_small"], turn["little"]
@@ -157,7 +166,7 @@ class Tuner:
         )
         rule13 = ctrl.Rule(
             frequencyDifference["very_close"] & stringLength["long"], turn["little"]
-        )        
+        )
         rule14 = ctrl.Rule(
             frequencyDifference["close"] & stringLength["long"], turn["medium"]
         )
@@ -184,8 +193,8 @@ class Tuner:
                 rule12,
                 rule13,
                 rule14,
-                rule15,                
-                rule16
+                rule15,
+                rule16,
             ]
         )
         return turn_ctrl
@@ -436,7 +445,6 @@ class Tuner:
         *,
         title: str = "Heatmap of Turns for Frequency and Length",
     ) -> None:
-
         """
         Create the graphs for the control space.
 
@@ -488,7 +496,6 @@ class Tuner:
         plt.xlabel("Frequency")
         plt.ylabel("String Length")
         plt.title(title)
-
 
     def createDataframe(self) -> None:
         """
