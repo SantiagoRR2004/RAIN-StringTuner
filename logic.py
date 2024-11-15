@@ -430,10 +430,10 @@ class Tuner:
 
         for name, term in frequencyDifference.terms.items():
 
-            self.createGraphs(
-                data.loc[fUni[term.mf > 0]],
-                title=f"Heatmap of Turns for Frequency {name} and Length",
-            )
+                self.createGraphs(
+                    data.loc[fUni[term.mf > 0]],
+                    title=f"Heatmap of Turns for Frequency {name} and Length",
+                )
 
         self.createGraphs(data)
 
@@ -517,13 +517,14 @@ class Tuner:
         lengths = stringLength.universe
 
         batchSize = 50
-        nBatches = len(frequenciesAll) // batchSize
+        # Number of batches rounded up
+        nBatches = (len(frequenciesAll) + batchSize - 1) // batchSize
         all_turns = []
 
         for batch_index in tqdm(range(nBatches), desc="Processing Batches"):
             # Extract the current batch of 50 frequencies
             start = batch_index * batchSize
-            end = start + batchSize
+            end = min(start + batchSize, len(frequenciesAll))  # Ensure we don't go out of bounds
             frequencies = frequenciesAll[start:end]
 
             # Create a meshgrid of frequencies and lengths
