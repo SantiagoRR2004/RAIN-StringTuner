@@ -33,17 +33,14 @@ class Tuner:
             "frequency",
         )
 
-        """frequencyDifference["very_very_close"] = fuzz.trapmf(
+        frequencyDifference["very_very_close"] = fuzz.trapmf(
             frequencyDifference.universe, [0, 0, 10, 30]
         )        
         frequencyDifference["very_close"] = fuzz.trapmf(
-            frequencyDifference.universe, [5, 5, 20, 80]"""
-
-        frequencyDifference["very_close"] = fuzz.trapmf(
-            frequencyDifference.universe, [0, 0, 20, 80]
+            frequencyDifference.universe, [0, 5, 25, 80]
         )
         frequencyDifference["close"] = fuzz.trapmf(
-            frequencyDifference.universe, [20, 80, 100, 200]
+            frequencyDifference.universe, [25, 80, 100, 200]
         )
         frequencyDifference["medium"] = fuzz.trapmf(
             frequencyDifference.universe, [100, 250, 500, 1000]
@@ -74,7 +71,7 @@ class Tuner:
         )
 
         stringLength["small"] = fuzz.trapmf(
-            stringLength.universe, [0.08, 0.08, 0.2, 0.5]
+            stringLength.universe, [0.08, 0.08, 0.25, 0.5]
         )
         stringLength["medium_small"] = fuzz.trapmf(
             stringLength.universe, [0.1, 0.4, 0.6, 0.8]
@@ -82,7 +79,9 @@ class Tuner:
         stringLength["medium_long"] = fuzz.trapmf(
             stringLength.universe, [0.4, 0.6, 1, 1.1]
         )
-        stringLength["long"] = fuzz.trapmf(stringLength.universe, [0.8, 1, 1.2, 1.2])
+        stringLength["long"] = fuzz.trapmf(
+            stringLength.universe, [0.8, 1, 1.2, 1.2]
+        )
         return stringLength
 
     def consequentTurn(self) -> ctrl.Consequent:
@@ -123,6 +122,10 @@ class Tuner:
             - ctrl.ControlSystem: The rules for the fuzzy controller.
         """
         # Reglas difusas
+        rule0 = ctrl.Rule(
+            frequencyDifference["very_very_close"] & stringLength["small"],
+            turn["very_very_little"],
+        )
         rule1 = ctrl.Rule(
             frequencyDifference["very_close"] & stringLength["small"],
             turn["very_very_little"],
@@ -165,20 +168,24 @@ class Tuner:
             frequencyDifference["far"] & stringLength["medium_long"], turn["large"]
         )
         rule13 = ctrl.Rule(
+            frequencyDifference["very_very_close"] & stringLength["long"], turn["very_little"]
+            )
+        rule14 = ctrl.Rule(
             frequencyDifference["very_close"] & stringLength["long"], turn["little"]
         )
-        rule14 = ctrl.Rule(
+        rule15 = ctrl.Rule(
             frequencyDifference["close"] & stringLength["long"], turn["medium"]
         )
-        rule15 = ctrl.Rule(
+        rule16 = ctrl.Rule(
             frequencyDifference["medium"] & stringLength["long"], turn["large"]
         )
-        rule16 = ctrl.Rule(
+        rule17 = ctrl.Rule(
             frequencyDifference["far"] & stringLength["long"], turn["large"]
         )
 
         turn_ctrl = ctrl.ControlSystem(
-            [
+            [   
+                rule0,
                 rule1,
                 rule2,
                 rule3,
@@ -195,11 +202,13 @@ class Tuner:
                 rule14,
                 rule15,
                 rule16,
+                rule17,
+                
             ]
         )
         return turn_ctrl
 
-    def createRulesManually(
+    def createRulesAutomatically(
         self,
         frequencyDifference: ctrl.Antecedent,
         stringLength: ctrl.Antecedent,
