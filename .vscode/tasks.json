@@ -2,9 +2,9 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Setup Environment and Install Dependencies",
+            "label": "Install Python",
             "type": "shell",
-            "command": "python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt",
+            "command": "code --install-extension ms-python.python",
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -20,9 +20,9 @@
             "problemMatcher": []
         },
         {
-            "label": "Install Python",
+            "label": "Setup Environment and Install Dependencies",
             "type": "shell",
-            "command": "code --install-extension ms-python.python",
+            "command": "python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt",
             "group": {
                 "kind": "build",
                 "isDefault": true
