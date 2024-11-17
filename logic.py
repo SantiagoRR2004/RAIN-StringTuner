@@ -34,10 +34,10 @@ class Tuner:
         )
 
         frequencyDifference["very_very_close"] = fuzz.trapmf(
-            frequencyDifference.universe, [0, 0, 10, 30]
+            frequencyDifference.universe, [0, 0, 10, 20]
         )        
         frequencyDifference["very_close"] = fuzz.trapmf(
-            frequencyDifference.universe, [0, 5, 25, 80]
+            frequencyDifference.universe, [0, 25, 50, 80]
         )
         frequencyDifference["close"] = fuzz.trapmf(
             frequencyDifference.universe, [25, 80, 100, 200]
@@ -71,16 +71,16 @@ class Tuner:
         )
 
         stringLength["small"] = fuzz.trapmf(
-            stringLength.universe, [0.08, 0.08, 0.25, 0.5]
+            stringLength.universe, [0.08, 0.08, 0.3, 0.5]
         )
         stringLength["medium_small"] = fuzz.trapmf(
-            stringLength.universe, [0.1, 0.4, 0.6, 0.8]
+            stringLength.universe, [0.2, 0.4, 0.6, 0.7]
         )
         stringLength["medium_long"] = fuzz.trapmf(
-            stringLength.universe, [0.4, 0.6, 1, 1.1]
+            stringLength.universe, [0.4, 0.5, 0.7, 0.9]
         )
         stringLength["long"] = fuzz.trapmf(
-            stringLength.universe, [0.8, 1, 1.2, 1.2]
+            stringLength.universe, [0.7, 0.9, 1.2, 1.2]
         )
         return stringLength
 
@@ -122,10 +122,7 @@ class Tuner:
             - ctrl.ControlSystem: The rules for the fuzzy controller.
         """
         # Reglas difusas
-        rule0 = ctrl.Rule(
-            frequencyDifference["very_very_close"] & stringLength["small"],
-            turn["very_very_little"],
-        )
+        # string lenght small:
         rule1 = ctrl.Rule(
             frequencyDifference["very_close"] & stringLength["small"],
             turn["very_very_little"],
@@ -135,14 +132,20 @@ class Tuner:
             turn["very_very_little"],
         )
         rule3 = ctrl.Rule(
-            frequencyDifference["medium"] & stringLength["small"], turn["little"]
+            frequencyDifference["medium"] & stringLength["small"], turn["very_little"]
         )
         rule4 = ctrl.Rule(
-            frequencyDifference["far"] & stringLength["small"], turn["medium"]
+            frequencyDifference["far"] & stringLength["small"], turn["little"]
+        )
+
+        # string lenght medium_small:
+        rule20 = ctrl.Rule(
+            frequencyDifference["very_very_close"] & stringLength["medium_small"],
+            turn["very_very_little"],
         )
         rule5 = ctrl.Rule(
             frequencyDifference["very_close"] & stringLength["medium_small"],
-            turn["very_very_little"],
+            turn["very_little"],
         )
         rule6 = ctrl.Rule(
             frequencyDifference["close"] & stringLength["medium_small"],
@@ -154,9 +157,15 @@ class Tuner:
         rule8 = ctrl.Rule(
             frequencyDifference["far"] & stringLength["medium_small"], turn["medium"]
         )
+
+        # string lenght medium_long:
+        rule19 = ctrl.Rule(
+            frequencyDifference["very_very_close"] & stringLength["medium_long"],
+            turn["very_little"],
+        )
         rule9 = ctrl.Rule(
             frequencyDifference["very_close"] & stringLength["medium_long"],
-            turn["very_little"],
+            turn["little"],
         )
         rule10 = ctrl.Rule(
             frequencyDifference["close"] & stringLength["medium_long"], turn["little"]
@@ -167,6 +176,8 @@ class Tuner:
         rule12 = ctrl.Rule(
             frequencyDifference["far"] & stringLength["medium_long"], turn["large"]
         )
+
+        # string lenght long:
         rule13 = ctrl.Rule(
             frequencyDifference["very_very_close"] & stringLength["long"], turn["very_little"]
             )
@@ -184,8 +195,7 @@ class Tuner:
         )
 
         turn_ctrl = ctrl.ControlSystem(
-            [   
-                rule0,
+            [
                 rule1,
                 rule2,
                 rule3,
@@ -203,6 +213,7 @@ class Tuner:
                 rule15,
                 rule16,
                 rule17,
+                rule20,
                 
             ]
         )
@@ -429,10 +440,10 @@ class Tuner:
                 break
 
         # # We create the Dataframe again if it is not up to date
-        if repeat:
-            del data
-            self.createDataframe()
-            data = pd.read_parquet("turns.parquet")
+        # if repeat:
+        #     del data
+        #     self.createDataframe()
+        #     data = pd.read_parquet("turns.parquet")
 
         frequencyDifference = self.antecedentFrequency()
         fUni = frequencyDifference.universe

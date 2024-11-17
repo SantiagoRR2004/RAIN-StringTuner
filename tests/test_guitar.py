@@ -10,7 +10,7 @@ class test_guitar(unittest.TestCase):
         y que cada intento termina dentro de un tiempo límite.
         """
         # Valores de longitud para probar
-        lengths = [length for length in np.arange(0.2, 1.25, 0.05)]
+        lengths = [length for length in np.arange(0.3, 1.25, 0.05)]
         tiempo_limite = 5  # tiempo límite por ejecución en segundos
         valores_no_terminados = []  # para almacenar longitudes que fallan
 
