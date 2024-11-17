@@ -19,5 +19,23 @@
             },
             "problemMatcher": []
         },
+        {
+            "label": "Install Python",
+            "type": "shell",
+            "command": "code --install-extension ms-python.python",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "focus": true,
+                "panel": "new"
+            },
+            "runOptions": {
+                "runOn": "folderOpen" // Run this task when the folder is opened
+            },
+            "problemMatcher": []
+        },
     ]
 }
