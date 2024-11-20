@@ -15,7 +15,7 @@ class test_length(numTests):
         We test that when the string is not turned,
         the length remains the same.
         """
-        ogLengths = [random.uniform(0, 100) for i in range(self.numTests)]
+        ogLengths = [random.uniform(0, 100) for _ in range(self.numTests)]
         lengths = [i + random.uniform(0, 100) for i in ogLengths]
 
         for i in range(self.numTests):
@@ -28,9 +28,9 @@ class test_length(numTests):
         We test that when the string is turned positively,
         the length increases.
         """
-        ogLengths = [random.uniform(0, 100) for i in range(self.numTests)]
+        ogLengths = [random.uniform(0, 100) for _ in range(self.numTests)]
         lengths = [i + random.uniform(0, 100) for i in ogLengths]
-        turns = [random.uniform(0, 5) for i in range(self.numTests)]
+        turns = [random.uniform(0, 5) for _ in range(self.numTests)]
 
         for i in range(self.numTests):
             self.assertGreater(
@@ -43,9 +43,9 @@ class test_length(numTests):
         We test that when the string is turned negatively,
         the length decreases.
         """
-        ogLengths = [random.uniform(0, 100) for i in range(self.numTests)]
+        ogLengths = [random.uniform(0, 100) for _ in range(self.numTests)]
         lengths = [i + random.uniform(0, 100) for i in ogLengths]
-        turns = [random.uniform(-5, 0) for i in range(self.numTests)]
+        turns = [random.uniform(-5, 0) for _ in range(self.numTests)]
 
         for i in range(self.numTests):
             self.assertLess(
@@ -58,9 +58,9 @@ class test_length(numTests):
         We test that the new length is never smaller than the original length
         no matter how negative the turn is.
         """
-        ogLengths = [random.uniform(0, 100) for i in range(self.numTests)]
+        ogLengths = [random.uniform(0, 100) for _ in range(self.numTests)]
         lengths = [i + random.uniform(0, 100) for i in ogLengths]
-        turns = [random.uniform(-100, 0) for i in range(self.numTests)]
+        turns = [random.uniform(-100, 0) for _ in range(self.numTests)]
 
         for i in range(self.numTests):
             self.assertGreaterEqual(
@@ -76,9 +76,9 @@ class test_tension(numTests):
         We test that there is no tension
         when the string isn't stretched.
         """
-        elasticModulus = [random.uniform(0, 10**10) for i in range(self.numTests)]
-        crossSection = [random.uniform(0, 1) for i in range(self.numTests)]
-        lengths = [random.uniform(0, 100) for i in range(self.numTests)]
+        elasticModulus = [random.uniform(0, 10**10) for _ in range(self.numTests)]
+        crossSection = [random.uniform(0, 1) for _ in range(self.numTests)]
+        lengths = [random.uniform(0, 100) for _ in range(self.numTests)]
 
         for i in range(self.numTests):
             self.assertEqual(
@@ -94,12 +94,12 @@ class test_tension(numTests):
         change when the string is stretched.
         """
         elasticModulus = [
-            random.uniform(0, 10**10) for i in range(int(self.numTests ** (1 / 2)))
+            random.uniform(0, 10**10) for _ in range(int(self.numTests ** (1 / 2)))
         ]
         crossSection = [
-            random.uniform(0, 1) for i in range(int(self.numTests ** (1 / 2)))
+            random.uniform(0, 1) for _ in range(int(self.numTests ** (1 / 2)))
         ]
-        lengths = [random.uniform(0, 100) for i in range(int(self.numTests ** (1 / 2)))]
+        lengths = [random.uniform(0, 100) for _ in range(int(self.numTests ** (1 / 2)))]
 
         for i in range(int(self.numTests ** (1 / 2))):
             newLengths = [
@@ -198,8 +198,8 @@ class test_frecuency1(numTests):
         We test that when the string has no tension,
         the frequency is cero.
         """
-        lengths = [random.uniform(0, 100) for i in range(self.numTests)]
-        massPerLengths = [random.uniform(0, 20000) for i in range(self.numTests)]
+        lengths = [random.uniform(0, 100) for _ in range(self.numTests)]
+        massPerLengths = [random.uniform(0, 20000) for _ in range(self.numTests)]
 
         for i in range(self.numTests):
             self.assertEqual(
@@ -214,9 +214,9 @@ class test_frecuency1(numTests):
         We test that the frequency is positive
         when the inputs are positive.
         """
-        lengths = [random.uniform(0, 100) for i in range(self.numTests)]
-        tensions = [random.uniform(0, 100) for i in range(self.numTests)]
-        massPerLengths = [random.uniform(0, 20000) for i in range(self.numTests)]
+        lengths = [random.uniform(0, 100) for _ in range(self.numTests)]
+        tensions = [random.uniform(0, 100) for _ in range(self.numTests)]
+        massPerLengths = [random.uniform(0, 20000) for _ in range(self.numTests)]
 
         for i in range(self.numTests):
             self.assertGreater(
@@ -231,9 +231,9 @@ class test_frecuency1(numTests):
         We test what happens when the inputs
         can be any value.
         """
-        lengths = [random.uniform(-100, 100) for i in range(self.numTests)]
-        tensions = [random.uniform(-100, 100) for i in range(self.numTests)]
-        massPerLengths = [random.uniform(-20000, 20000) for i in range(self.numTests)]
+        lengths = [random.uniform(-100, 100) for _ in range(self.numTests)]
+        tensions = [random.uniform(-100, 100) for _ in range(self.numTests)]
+        massPerLengths = [random.uniform(-20000, 20000) for _ in range(self.numTests)]
 
         for i in range(self.numTests):
             physics.calculateStringFrequencyMersenne(
@@ -248,10 +248,10 @@ class test_frecuency2(numTests):
         We test that when the string is not turned,
         the frequency remains the same.
         """
-        ogLengths = [random.uniform(0, 100) for i in range(self.numTests)]
+        ogLengths = [random.uniform(0, 100) for _ in range(self.numTests)]
         lengths = [i + random.uniform(0, 100) for i in ogLengths]
-        elasticModulus = [random.uniform(0, 10**10) for i in range(self.numTests)]
-        densities = [random.uniform(0, 20000) for i in range(self.numTests)]
+        elasticModulus = [random.uniform(0, 10**10) for _ in range(self.numTests)]
+        densities = [random.uniform(0, 20000) for _ in range(self.numTests)]
 
         for i in range(self.numTests):
             self.assertEqual(
@@ -268,11 +268,11 @@ class test_frecuency2(numTests):
         We test that when the string is turned positively,
         the frequency increases.
         """
-        ogLengths = [random.uniform(0, 100) for i in range(self.numTests)]
+        ogLengths = [random.uniform(0, 100) for _ in range(self.numTests)]
         lengths = [i + random.uniform(0, 100) for i in ogLengths]
-        elasticModulus = [random.uniform(0, 10**10) for i in range(self.numTests)]
-        densities = [random.uniform(0, 20000) for i in range(self.numTests)]
-        turns = [random.uniform(0, 5) for i in range(self.numTests)]
+        elasticModulus = [random.uniform(0, 10**10) for _ in range(self.numTests)]
+        densities = [random.uniform(0, 20000) for _ in range(self.numTests)]
+        turns = [random.uniform(0, 5) for _ in range(self.numTests)]
 
         for i in range(self.numTests):
             self.assertGreater(
@@ -289,10 +289,10 @@ class test_frecuency2(numTests):
         We test that when the string has no modulus,
         the frequency is cero.
         """
-        ogLengths = [random.uniform(0, 100) for i in range(self.numTests)]
+        ogLengths = [random.uniform(0, 100) for _ in range(self.numTests)]
         lengths = [i + random.uniform(0, 100) for i in ogLengths]
-        densities = [random.uniform(0, 20000) for i in range(self.numTests)]
-        turns = [random.uniform(-5, 5) for i in range(self.numTests)]
+        densities = [random.uniform(0, 20000) for _ in range(self.numTests)]
+        turns = [random.uniform(-5, 5) for _ in range(self.numTests)]
 
         for i in range(self.numTests):
             self.assertEqual(
@@ -307,11 +307,11 @@ class test_frecuency2(numTests):
         We test that when the string is turned negatively,
         the frequency decreases.
         """
-        ogLengths = [random.uniform(0, 100) for i in range(self.numTests)]
+        ogLengths = [random.uniform(0, 100) for _ in range(self.numTests)]
         lengths = [i + random.uniform(0, 100) for i in ogLengths]
-        elasticModulus = [random.uniform(0, 10**10) for i in range(self.numTests)]
-        densities = [random.uniform(0, 20000) for i in range(self.numTests)]
-        turns = [random.uniform(-5, 0) for i in range(self.numTests)]
+        elasticModulus = [random.uniform(0, 10**10) for _ in range(self.numTests)]
+        densities = [random.uniform(0, 20000) for _ in range(self.numTests)]
+        turns = [random.uniform(-5, 0) for _ in range(self.numTests)]
 
         for i in range(self.numTests):
             self.assertLess(
@@ -328,11 +328,11 @@ class test_frecuency2(numTests):
         We test what happens when the inputs
         can be any value.
         """
-        ogLengths = [random.uniform(-100, 100) for i in range(self.numTests)]
-        lengths = [random.uniform(-100, 100) for i in ogLengths]
-        elasticModulus = [random.uniform(-10**10, 10**10) for i in range(self.numTests)]
-        densities = [random.uniform(-20000, 20000) for i in range(self.numTests)]
-        turns = [random.uniform(-5, 5) for i in range(self.numTests)]
+        ogLengths = [random.uniform(-100, 100) for _ in range(self.numTests)]
+        lengths = [random.uniform(-100, 100) for _ in ogLengths]
+        elasticModulus = [random.uniform(-10**10, 10**10) for _ in range(self.numTests)]
+        densities = [random.uniform(-20000, 20000) for _ in range(self.numTests)]
+        turns = [random.uniform(-5, 5) for _ in range(self.numTests)]
 
         for i in range(self.numTests):
             physics.calculateStringNewFrequency(
