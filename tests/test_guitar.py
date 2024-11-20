@@ -16,10 +16,12 @@ class test_guitar(unittest.TestCase):
 
         for length in lengths:
             guitar = guitars.ClassicalGuitar(length=length)
-            print(f"Prueba con length {length}")
+            # print(f"Prueba con length {length}")
             try:
                 turns = guitar.tune(timeLimit=tiempo_limite)
-                print(f"Prueba con length {length} completada en tiempo. Giros: {len(turns)}")
+                print(
+                    f"Prueba con length {length} completada en tiempo. Giros: {len(turns)}"
+                )
             except TimeoutError:
                 valores_no_terminados.append(length)
                 print(f"Prueba con length {length} no completada en tiempo")
