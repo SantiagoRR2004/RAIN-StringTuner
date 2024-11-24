@@ -139,58 +139,54 @@ class Tuner:
         )
 
         # string lenght medium_small:
-        rule20 = ctrl.Rule(
+        rule5 = ctrl.Rule(
             frequencyDifference["very_very_close"] & stringLength["medium_small"],
             turn["very_very_little"],
         )
-        rule5 = ctrl.Rule(
+        rule6 = ctrl.Rule(
             frequencyDifference["very_close"] & stringLength["medium_small"],
             turn["very_little"],
         )
-        rule6 = ctrl.Rule(
+        rule7 = ctrl.Rule(
             frequencyDifference["close"] & stringLength["medium_small"],
             turn["very_little"],
         )
-        rule7 = ctrl.Rule(
+        rule8 = ctrl.Rule(
             frequencyDifference["medium"] & stringLength["medium_small"], turn["little"]
         )
-        rule8 = ctrl.Rule(
+        rule9 = ctrl.Rule(
             frequencyDifference["far"] & stringLength["medium_small"], turn["medium"]
         )
 
         # string lenght medium_long:
-        rule19 = ctrl.Rule(
-            frequencyDifference["very_very_close"] & stringLength["medium_long"],
-            turn["very_little"],
-        )
-        rule9 = ctrl.Rule(
+        rule10 = ctrl.Rule(
             frequencyDifference["very_close"] & stringLength["medium_long"],
             turn["little"],
         )
-        rule10 = ctrl.Rule(
+        rule11 = ctrl.Rule(
             frequencyDifference["close"] & stringLength["medium_long"], turn["little"]
         )
-        rule11 = ctrl.Rule(
+        rule12 = ctrl.Rule(
             frequencyDifference["medium"] & stringLength["medium_long"], turn["medium"]
         )
-        rule12 = ctrl.Rule(
+        rule13 = ctrl.Rule(
             frequencyDifference["far"] & stringLength["medium_long"], turn["large"]
         )
 
         # string lenght long:
-        rule13 = ctrl.Rule(
+        rule14 = ctrl.Rule(
             frequencyDifference["very_very_close"] & stringLength["long"], turn["very_little"]
             )
-        rule14 = ctrl.Rule(
+        rule15 = ctrl.Rule(
             frequencyDifference["very_close"] & stringLength["long"], turn["little"]
         )
-        rule15 = ctrl.Rule(
+        rule16 = ctrl.Rule(
             frequencyDifference["close"] & stringLength["long"], turn["medium"]
         )
-        rule16 = ctrl.Rule(
+        rule17 = ctrl.Rule(
             frequencyDifference["medium"] & stringLength["long"], turn["large"]
         )
-        rule17 = ctrl.Rule(
+        rule18 = ctrl.Rule(
             frequencyDifference["far"] & stringLength["long"], turn["large"]
         )
 
@@ -213,7 +209,7 @@ class Tuner:
                 rule15,
                 rule16,
                 rule17,
-                rule20,
+                rule18,
                 
             ]
         )
@@ -439,7 +435,7 @@ class Tuner:
                 print("Not the same calculations. Need to update the Dataframe.")
                 break
 
-        # # We create the Dataframe again if it is not up to date
+        # We create the Dataframe again if it is not up to date
         # if repeat:
         #     del data
         #     self.createDataframe()
