@@ -4,6 +4,7 @@ import physics
 import logic
 import numpy as np
 import time
+import random
 
 
 class Instrument(abc.ABC):
@@ -192,3 +193,34 @@ class Instrument(abc.ABC):
                     raise TimeoutError("Time limit exceeded")
 
         return turns
+
+
+class RandomInstrument(Instrument):
+    def __init__(
+        self, nStrings: int = random.randint(1, 40), length: float = 0.65
+    ) -> None:
+
+        maxFrequency = 1000
+        minFrequency = 100
+
+        self.frequencies = list(np.random.uniform(minFrequency, maxFrequency, nStrings))
+
+        self.lengths = [length] * len(self.frequencies)
+
+        # Steel: https://en.wikipedia.org/wiki/Young%27s_modulus
+        maxYoungModulus = 200 * (10**9)
+        # Nylon: https://en.wikipedia.org/wiki/Young%27s_modulus
+        minYoungModulus = 2.93 * (10**9)
+
+        self.youngModulus = [
+            random.uniform(minYoungModulus, maxYoungModulus) for _ in range(nStrings)
+        ]
+
+        # Steel density: https://en.wikipedia.org/wiki/Density
+        maxDensity = 7850
+        # Nylon: https://en.wikipedia.org/wiki/Nylon_66
+        minDensity = 1140
+
+        self.density = [random.uniform(minDensity, maxDensity) for _ in range(nStrings)]
+
+        super().__init__()
