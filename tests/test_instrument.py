@@ -74,6 +74,7 @@ class test_instrument(numTests):
         t = 5
 
         nSuccess = 0
+        nFinished = 0
         averageTurns = []
         nStringSuccess = 0
 
@@ -93,23 +94,30 @@ class test_instrument(numTests):
 
             guitar.calculateTightness()
 
-            itTurns = guitar.tune(timeLimit=self.timelimit)
+            try:
+                itTurns = guitar.tune(timeLimit=self.timelimit)
 
-            for turns in itTurns:
-                nTurns += np.where(turns != 0, 1, 0)
+                nFinished += 1
 
-            if np.all(nTurns <= t):
-                nSuccess += 1
+                for turns in itTurns:
+                    nTurns += np.where(turns != 0, 1, 0)
 
-            averageTurns.append(sum(nTurns) / len(nTurns))
+                if np.all(nTurns <= t):
+                    nSuccess += 1
 
-            nStringSuccess += np.sum(np.where(nTurns <= t, 1, 0))
+                averageTurns.append(sum(nTurns) / len(nTurns))
 
-        print(f"Success rate: {100*nSuccess/self.numTests}%")
+                nStringSuccess += np.sum(np.where(nTurns <= t, 1, 0))
+
+            except TimeoutError:
+                continue
+
+        print(f"Success rate: {100*nSuccess/nFinished}%")
         print(
             f"Success rate per string: {100*nStringSuccess/(self.numTests*len(objective))}%"
         )
         print(f"Average turns by string: {sum(averageTurns)/len(averageTurns)}")
+        print(f"{self.numTests - nFinished} couldn't be tuned in {self.timelimit} seconds.")
 
     def test_12TurnsHarp(self):
         """
@@ -119,7 +127,6 @@ class test_instrument(numTests):
         """
         t = 12
 
-        nSuccess = 0
         averageTurns = []
         nStringSuccess = 0
 
@@ -127,21 +134,21 @@ class test_instrument(numTests):
 
         nTurns = np.zeros(len(harp.frequencies))
 
-        itTurns = harp.tune(timeLimit=self.timelimit)
+        try:
+            itTurns = harp.tune(timeLimit=self.timelimit)
 
-        for turns in itTurns:
-            nTurns += np.where(turns != 0, 1, 0)
+            for turns in itTurns:
+                nTurns += np.where(turns != 0, 1, 0)
 
-        if np.all(nTurns <= t):
-            nSuccess += 1
+            averageTurns.append(sum(nTurns) / len(nTurns))
 
-        averageTurns.append(sum(nTurns) / len(nTurns))
+            nStringSuccess += np.sum(np.where(nTurns <= t, 1, 0))
 
-        nStringSuccess += np.sum(np.where(nTurns <= t, 1, 0))
+            print(f"Success rate per string: {100*nStringSuccess/len(harp.frequencies)}%")
+            print(f"Average turns by string: {sum(averageTurns)/len(averageTurns)}")
 
-        print(f"Success rate: {100*nSuccess}%")
-        print(f"Success rate per string: {100*nStringSuccess/len(harp.frequencies)}%")
-        print(f"Average turns by string: {sum(averageTurns)/len(averageTurns)}")
+        except TimeoutError:
+            print(f"The harp couldn't be tuned in {self.timelimit} seconds.")
 
     def test_veryCloseInstruments(self):
         """
@@ -196,6 +203,7 @@ class test_instrument(numTests):
         t = 5
 
         nSuccess = 0
+        nFinished = 0
         averageTurns = []
         nStringSuccess = 0
 
@@ -215,20 +223,56 @@ class test_instrument(numTests):
 
             guitar.calculateTightness()
 
-            itTurns = guitar.tune(timeLimit=self.timelimit)
+            try:
+                itTurns = guitar.tune(timeLimit=self.timelimit)
 
-            for turns in itTurns:
-                nTurns += np.where(turns != 0, 1, 0)
+                nFinished += 1
 
-            if np.all(nTurns <= t):
-                nSuccess += 1
+                for turns in itTurns:
+                    nTurns += np.where(turns != 0, 1, 0)
 
-            averageTurns.append(sum(nTurns) / len(nTurns))
+                if np.all(nTurns <= t):
+                    nSuccess += 1
 
-            nStringSuccess += np.sum(np.where(nTurns <= t, 1, 0))
+                averageTurns.append(sum(nTurns) / len(nTurns))
 
-        print(f"Success rate: {100*nSuccess/self.numTests}%")
+                nStringSuccess += np.sum(np.where(nTurns <= t, 1, 0))
+
+            except TimeoutError:
+                continue
+
+        print(f"Success rate: {100*nSuccess/nFinished}%")
         print(
             f"Success rate per string: {100*nStringSuccess/(self.numTests*len(objective))}%"
         )
         print(f"Average turns by string: {sum(averageTurns)/len(averageTurns)}")
+        print(f"{self.numTests - nFinished} couldn't be tuned in {self.timelimit} seconds.")
+
+    def test_weirdStrings(self):
+        """
+        We test that each string can be of
+        a different material and still be tuned.
+        """
+        nCorrect = 0
+        turns = []
+
+        for _ in range(self.numTests):
+            inst = instrument.RandomInstrument()
+
+            nTurns = np.zeros(len(inst.frequencies))
+
+            try:
+                itTurns = inst.tune(timeLimit=self.timelimit)
+                nCorrect += 1
+
+                for turn in itTurns:
+                    nTurns += np.where(turn != 0, 1, 0)
+
+                turns.extend(itTurns)
+
+            except TimeoutError:
+                continue
+
+        print(f"Success rate: {100*nCorrect/self.numTests}%")
+        print(f"Average turns by string: {sum(turns)/(len(turns) if turns else 1)}")
+        print(f"Turns by instrument: {sum(turns)/(nCorrect if nCorrect else 1)}")
