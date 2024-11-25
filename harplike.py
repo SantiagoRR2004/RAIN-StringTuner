@@ -85,5 +85,5 @@ class Harp36String(instrument.Instrument):
     ]
 
     # https://en.wikipedia.org/wiki/Silver
-    youngModulus = 83 * (10 ** 9)
-    density = 10503
+    youngModulus = [83 * (10**9)] * len(frequencies)
+    density = [10503] * len(frequencies)

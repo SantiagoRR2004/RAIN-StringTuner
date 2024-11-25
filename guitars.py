@@ -12,10 +12,10 @@ class ClassicalGuitar(instrument.Instrument):
         self.lengths = [length] * len(self.frequencies)
 
         # Nylon: https://en.wikipedia.org/wiki/Young%27s_modulus
-        self.youngModulus = 2.93 * (10**9)
+        self.youngModulus = [2.93 * (10**9)] * len(self.frequencies)
 
         # https://en.wikipedia.org/wiki/Nylon_66
-        self.density = 1140
+        self.density = [1140] * len(self.frequencies)
 
         super().__init__()
 
@@ -30,10 +30,10 @@ class ElectricGuitar(instrument.Instrument):
         # Electric guitars typically have steel or nickel strings
 
         # Steel: https://en.wikipedia.org/wiki/Young%27s_modulus
-        self.youngModulus = 200 * (10**9)  # For steel
+        self.youngModulus = [200 * (10**9)] * len(self.frequencies)  # For steel
 
         # Steel density: https://en.wikipedia.org/wiki/Density
-        self.density = 7850  # Steel density in kg/m^3
+        self.density = [7850] * len(self.frequencies)  # Steel density in kg/m^3
 
         # Scale length remains relatively uniform for electric guitars
         # Often slightly shorter than classical guitars
@@ -51,9 +51,9 @@ class BassTuningGuitar(instrument.Instrument):
         self.lengths = [length] * len(self.frequencies)
 
         # Nylon: https://en.wikipedia.org/wiki/Young%27s_modulus
-        self.youngModulus = 2.93 * (10**9)
+        self.youngModulus = [2.93 * (10**9)] * len(self.frequencies)
 
         # https://en.wikipedia.org/wiki/Nylon_66
-        self.density = 1140
+        self.density = [1140] * len(self.frequencies)
 
         super().__init__()

@@ -30,7 +30,7 @@ class Instrument(abc.ABC):
             - None
         """
         self.stringFrequencies = np.zeros(len(self.frequencies))
-        #self.stringFrequencies.fill(100)
+        # self.stringFrequencies.fill(100)
         self.calculateTightness()
         self.checker()
 
@@ -41,8 +41,8 @@ class Instrument(abc.ABC):
         It requires the following attributes to be already defined:
             - stringFrequencies (list): The frequencies of the strings in hertz.
             - lengths (list): The initial lengths of the strings in meters.
-            - youngModulus (float): The young modulus of the strings in pascals.
-            - density (float): The density of the strings in kilograms per cubic meter.
+            - youngModulus (list): The young modulus of the strings in pascals.
+            - density (list): The densities of the strings in kilograms per cubic meter.
 
         Args:
             - None
@@ -54,8 +54,8 @@ class Instrument(abc.ABC):
             physics.calculateNewLengthByFrequency(
                 self.lengths[i],
                 self.stringFrequencies[i],
-                self.youngModulus,
-                self.density,
+                self.youngModulus[i],
+                self.density[i],
             )
             for i in range(len(self.frequencies))
         ]
@@ -83,9 +83,15 @@ class Instrument(abc.ABC):
             raise ValueError(
                 "The number of frequencies and string frequencies must be the same."
             )
-        elif len(self.lengths) != len(self.stringLengths):
+        elif len(self.frequencies) != len(self.stringLengths):
             raise ValueError(
-                "The number of lengths and string lengths must be the same."
+                "The number of frequencies and string lengths must be the same."
+            )
+        elif len(self.frequencies) != len(self.density):
+            raise ValueError("The number of frequencies and density must be the same.")
+        elif len(self.frequencies) != len(self.youngModulus):
+            raise ValueError(
+                "The number of frequencies and young modulus must be the same."
             )
 
     def play(self) -> None:
@@ -126,8 +132,8 @@ class Instrument(abc.ABC):
         It requires the following attributes to be already defined:
             - frequencies (list): The frequencies of the strings in hertz.
             - lengths (list): The lengths of the strings in meters.
-            - youngModulus (float): The young modulus of the strings in pascals.
-            - density (float): The density of the strings in kilograms per cubic meter.
+            - youngModulus (list): The young modulus of the strings in pascals.
+            - density (list): The densities of the strings in kilograms per cubic meter.
 
         Args:
             - soundEnabled (bool): A boolean that indicates if the sound is enabled.
@@ -174,8 +180,8 @@ class Instrument(abc.ABC):
                         self.lengths[i],
                         self.stringLengths[i],
                         turn,
-                        self.youngModulus,
-                        self.density,
+                        self.youngModulus[i],
+                        self.density[i],
                     )
 
                     self.stringLengths[i] = newLength
