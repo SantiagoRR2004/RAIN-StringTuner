@@ -6,7 +6,7 @@ import instrument
 class ClassicalGuitar(instrument.Instrument):
     def __init__(self, length: float = 0.65):
         # https://en.wikipedia.org/wiki/Guitar_tunings
-        self.frequencies = [329.63, 246.94, 196.00, 146.83, 110.00, 82.41]
+        self.frequencies = [329.63, 246.94, 196.00, 146.83, 110.00, 82.41][::-1]
 
         # https://en.wikipedia.org/wiki/Scale_length_(string_instruments)
         self.lengths = [length] * len(self.frequencies)
@@ -25,7 +25,7 @@ class ElectricGuitar(instrument.Instrument):
         self, length: float = 0.648
     ):  # Standard electric guitar scale length in meters
         # Frequencies in standard tuning (EADGBE), same as classical guitar
-        self.frequencies = [329.63, 246.94, 196.00, 146.83, 110.00, 82.41]
+        self.frequencies = [329.63, 246.94, 196.00, 146.83, 110.00, 82.41][::-1]
 
         # Electric guitars typically have steel or nickel strings
 
@@ -45,7 +45,7 @@ class ElectricGuitar(instrument.Instrument):
 class BassTuningGuitar(instrument.Instrument):
     def __init__(self, length: float = 0.864):
         # https://en.wikipedia.org/wiki/Bass_guitar_tuning
-        self.frequencies = [130.81, 98.00, 73.42, 55.00, 41.20, 30.87]
+        self.frequencies = [130.81, 98.00, 73.42, 55.00, 41.20, 30.87][::-1]
 
         # https://en.wikipedia.org/wiki/Scale_length_(string_instruments)
         self.lengths = [length] * len(self.frequencies)

@@ -117,7 +117,9 @@ class test_instrument(numTests):
             f"Success rate per string: {100*nStringSuccess/(self.numTests*len(objective))}%"
         )
         print(f"Average turns by string: {sum(averageTurns)/len(averageTurns)}")
-        print(f"{self.numTests - nFinished} couldn't be tuned in {self.timelimit} seconds.")
+        print(
+            f"{self.numTests - nFinished} couldn't be tuned in {self.timelimit} seconds."
+        )
 
     def test_12TurnsHarp(self):
         """
@@ -144,7 +146,9 @@ class test_instrument(numTests):
 
             nStringSuccess += np.sum(np.where(nTurns <= t, 1, 0))
 
-            print(f"Success rate per string: {100*nStringSuccess/len(harp.frequencies)}%")
+            print(
+                f"Success rate per string: {100*nStringSuccess/len(harp.frequencies)}%"
+            )
             print(f"Average turns by string: {sum(averageTurns)/len(averageTurns)}")
 
         except TimeoutError:
@@ -246,7 +250,9 @@ class test_instrument(numTests):
             f"Success rate per string: {100*nStringSuccess/(self.numTests*len(objective))}%"
         )
         print(f"Average turns by string: {sum(averageTurns)/len(averageTurns)}")
-        print(f"{self.numTests - nFinished} couldn't be tuned in {self.timelimit} seconds.")
+        print(
+            f"{self.numTests - nFinished} couldn't be tuned in {self.timelimit} seconds."
+        )
 
     def test_weirdStrings(self):
         """

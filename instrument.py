@@ -203,7 +203,9 @@ class RandomInstrument(Instrument):
         maxFrequency = 1000
         minFrequency = 100
 
-        self.frequencies = list(np.random.uniform(minFrequency, maxFrequency, nStrings))
+        self.frequencies = list(
+            np.random.uniform(minFrequency, maxFrequency, nStrings)
+        )[::-1]
 
         self.lengths = [length] * len(self.frequencies)
 

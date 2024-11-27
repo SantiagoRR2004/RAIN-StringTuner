@@ -330,7 +330,9 @@ class test_frecuency2(numTests):
         """
         ogLengths = [random.uniform(-100, 100) for _ in range(self.numTests)]
         lengths = [random.uniform(-100, 100) for _ in ogLengths]
-        elasticModulus = [random.uniform(-10**10, 10**10) for _ in range(self.numTests)]
+        elasticModulus = [
+            random.uniform(-(10**10), 10**10) for _ in range(self.numTests)
+        ]
         densities = [random.uniform(-20000, 20000) for _ in range(self.numTests)]
         turns = [random.uniform(-5, 5) for _ in range(self.numTests)]
 

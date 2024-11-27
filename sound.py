@@ -116,5 +116,5 @@ def playStrum(frequencies: list) -> None:
 
 
 if __name__ == "__main__":
-    frequencies = [329.63, 246.94, 196.00, 146.83, 110.00, 82.41]
+    frequencies = [329.63, 246.94, 196.00, 146.83, 110.00, 82.41][::-1]
     playStrum(frequencies)

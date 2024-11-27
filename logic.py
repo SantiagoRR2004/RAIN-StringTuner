@@ -35,7 +35,7 @@ class Tuner:
 
         frequencyDifference["very_very_close"] = fuzz.trapmf(
             frequencyDifference.universe, [0, 0, 10, 20]
-        )        
+        )
         frequencyDifference["very_close"] = fuzz.trapmf(
             frequencyDifference.universe, [0, 25, 50, 80]
         )
@@ -79,9 +79,7 @@ class Tuner:
         stringLength["medium_long"] = fuzz.trapmf(
             stringLength.universe, [0.4, 0.5, 0.7, 0.9]
         )
-        stringLength["long"] = fuzz.trapmf(
-            stringLength.universe, [0.7, 0.9, 1.2, 1.2]
-        )
+        stringLength["long"] = fuzz.trapmf(stringLength.universe, [0.7, 0.9, 1.2, 1.2])
         return stringLength
 
     def consequentTurn(self) -> ctrl.Consequent:
@@ -175,8 +173,9 @@ class Tuner:
 
         # string lenght long:
         rule14 = ctrl.Rule(
-            frequencyDifference["very_very_close"] & stringLength["long"], turn["very_little"]
-            )
+            frequencyDifference["very_very_close"] & stringLength["long"],
+            turn["very_little"],
+        )
         rule15 = ctrl.Rule(
             frequencyDifference["very_close"] & stringLength["long"], turn["little"]
         )
@@ -210,7 +209,6 @@ class Tuner:
                 rule16,
                 rule17,
                 rule18,
-                
             ]
         )
         return turn_ctrl
@@ -436,20 +434,20 @@ class Tuner:
                 break
 
         # We create the Dataframe again if it is not up to date
-        # if repeat:
-        #     del data
-        #     self.createDataframe()
-        #     data = pd.read_parquet("turns.parquet")
+        if repeat:
+            del data
+            self.createDataframe()
+            data = pd.read_parquet("turns.parquet")
 
         frequencyDifference = self.antecedentFrequency()
         fUni = frequencyDifference.universe
 
         for name, term in frequencyDifference.terms.items():
 
-                self.createGraphs(
-                    data.loc[fUni[term.mf > 0]],
-                    title=f"Heatmap of Turns for Frequency {name} and Length",
-                )
+            self.createGraphs(
+                data.loc[fUni[term.mf > 0]],
+                title=f"Heatmap of Turns for Frequency {name} and Length",
+            )
 
         self.createGraphs(data)
 
@@ -540,7 +538,9 @@ class Tuner:
         for batch_index in tqdm(range(nBatches), desc="Processing Batches"):
             # Extract the current batch of 50 frequencies
             start = batch_index * batchSize
-            end = min(start + batchSize, len(frequenciesAll))  # Ensure we don't go out of bounds
+            end = min(
+                start + batchSize, len(frequenciesAll)
+            )  # Ensure we don't go out of bounds
             frequencies = frequenciesAll[start:end]
 
             # Create a meshgrid of frequencies and lengths

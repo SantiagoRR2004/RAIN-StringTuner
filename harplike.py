@@ -43,7 +43,7 @@ class Harp36String(instrument.Instrument):
         73.416,
         65.406,
         58.270,
-    ]
+    ][::-1]
 
     lengths = [
         0.080,
@@ -82,7 +82,7 @@ class Harp36String(instrument.Instrument):
         1.130,
         1.168,
         1.205,
-    ]
+    ][::-1]
 
     # https://en.wikipedia.org/wiki/Silver
     youngModulus = [83 * (10**9)] * len(frequencies)
