@@ -186,7 +186,6 @@ class Instrument(abc.ABC):
                         self.frequencies[i],
                         self.stringFrequencies[i],
                         self.lengths[i],
-                        verbose,
                     )
 
                     turnIteration[i] = turn
@@ -205,11 +204,21 @@ class Instrument(abc.ABC):
 
                     self.stringLengths[i] = newLength
 
+            if verbose:
+                for i in range(len(turnIteration)):
+                    if turnIteration[i] != 0:
+                        print(f"Turn string {i+1}: {turnIteration[i]}")
+                print("---------------------------------------------")
+            
             turns.append(turnIteration)
             if timeLimit:
                 if time.time() - startTime > timeLimit:
                     raise TimeoutError("Time limit exceeded")
 
+        if verbose:
+            print("Tuning finished")
+            print(f"Results: {self.frequencies}")
+        
         if showGraph:
             frequenciesIter.append(self.stringFrequencies.copy())
             self.graphsFromTuning(turns, frequenciesIter)
