@@ -12,7 +12,7 @@ class Tuner:
 
     def __init__(self) -> None:
 
-        self.tuner = self.createController()
+        self.tuner, self.frequencyDifference, self.stringLength, self.consequentTurn = self.createController()
 
     def antecedentFrequency(self) -> ctrl.Antecedent:
         """
@@ -284,7 +284,7 @@ class Tuner:
 
         turner = ctrl.ControlSystemSimulation(turn_ctrl)
 
-        return turner
+        return turner, frequencyDifference, stringLength, turn
 
     def calculateTurn(self, difference: float, stringLength: float) -> float:
         """
@@ -570,10 +570,32 @@ class Tuner:
         # Save the DataFrame to a Parquet file
         full_df.to_parquet("turns.parquet")
 
+    def graphExample(self, difference: float, stringLength: float) -> None:
+
+        self.tuner.input["frequency"] = abs(difference)
+        self.tuner.input["stringLength"] = stringLength
+
+        self.tuner.compute()
+        """
+        plt.plot(self.tuner.output["frequency"], self.tuner.output["turn"])
+        plt.xlabel("Frequency")
+        plt.ylabel("Turn")
+        plt.title("Turn vs Frequency")
+        plt.show()  
+        """
+        self.consequentTurn.view(sim=self.tuner)
+        plt.title("Turn")
+        self.frequencyDifference.view(sim=self.tuner)
+        plt.title("Frequency Difference")
+        self.stringLength.view(sim=self.tuner)
+        plt.title("String Length")
+        plt.show()
+
 
 if __name__ == "__main__":
     turner = Tuner()
 
-    turner.showAntecedentsAndConsequents()
+    #turner.showAntecedentsAndConsequents()
 
-    turner.showControlSpace()
+    #turner.showControlSpace()
+    turner.graphExample(30, 0.4)
