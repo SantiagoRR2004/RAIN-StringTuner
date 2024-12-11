@@ -11,8 +11,18 @@ from tqdm import tqdm
 class Tuner:
 
     def __init__(self) -> None:
+        """
+        Initialize the Tuner class.
 
-        self.tuner, self.frequencyDifference, self.stringLength, self.consequentTurn = self.createController()
+        It creates the fuzzy controller to tune a string.
+
+        Args:
+            - None
+
+        Returns:
+            - None
+        """
+        self.tuner = self.createController()
 
     def antecedentFrequency(self) -> ctrl.Antecedent:
         """
@@ -271,20 +281,23 @@ class Tuner:
         Returns:
             - ctrl.ControlSystemSimulation: A fuzzy controller to tune a string.
         """
-
-        frequencyDifference = self.antecedentFrequency()
-        stringLength = self.antecedentLength()
-        turn = self.consequentTurn()
+        self.frequencyDifferenceAntecedent = self.antecedentFrequency()
+        self.stringLengthAntecedent = self.antecedentLength()
+        self.turnConsequent = self.consequentTurn()
 
         # https://scikit-fuzzy.github.io/scikit-fuzzy/auto_examples/plot_defuzzify.html
         # tenemos centroid por defecto, además de mom, som, lom y bisector
-        turn.defuzzify_method = "mom"  # medium of maximum
+        self.turnConsequent.defuzzify_method = "mom"  # medium of maximum
 
-        turn_ctrl = self.createRules(frequencyDifference, stringLength, turn)
+        turn_ctrl = self.createRules(
+            self.frequencyDifferenceAntecedent,
+            self.stringLengthAntecedent,
+            self.turnConsequent,
+        )
 
         turner = ctrl.ControlSystemSimulation(turn_ctrl)
 
-        return turner, frequencyDifference, stringLength, turn
+        return turner
 
     def calculateTurn(self, difference: float, stringLength: float) -> float:
         """
@@ -451,8 +464,6 @@ class Tuner:
 
         self.createGraphs(data)
 
-        plt.show()
-
     def createGraphs(
         self,
         dataFrame: pd.DataFrame,
@@ -571,31 +582,34 @@ class Tuner:
         full_df.to_parquet("turns.parquet")
 
     def graphExample(self, difference: float, stringLength: float) -> None:
-
-        self.tuner.input["frequency"] = abs(difference)
-        self.tuner.input["stringLength"] = stringLength
-
-        self.tuner.compute()
         """
-        plt.plot(self.tuner.output["frequency"], self.tuner.output["turn"])
-        plt.xlabel("Frequency")
-        plt.ylabel("Turn")
-        plt.title("Turn vs Frequency")
-        plt.show()  
+        Graph an example of the fuzzy controller.
+
+        Args:
+            - difference (float): The difference between the objective frequency
+                                and the current frequency of the string.
+            - stringLength (float): The current length of the string.
+
+        Returns:
+            - None
         """
-        self.consequentTurn.view(sim=self.tuner)
+        self.calculateTurn(difference, stringLength)
+
+        self.turnConsequent.view(sim=self.tuner)
         plt.title("Turn")
-        self.frequencyDifference.view(sim=self.tuner)
+        self.frequencyDifferenceAntecedent.view(sim=self.tuner)
         plt.title("Frequency Difference")
-        self.stringLength.view(sim=self.tuner)
+        self.stringLengthAntecedent.view(sim=self.tuner)
         plt.title("String Length")
-        plt.show()
 
 
 if __name__ == "__main__":
     turner = Tuner()
 
-    #turner.showAntecedentsAndConsequents()
+    turner.showAntecedentsAndConsequents()
 
-    #turner.showControlSpace()
-    turner.graphExample(30, 0.4)
+    turner.showControlSpace()
+
+    turner.graphExample(10, 0.45)
+
+    plt.show()
