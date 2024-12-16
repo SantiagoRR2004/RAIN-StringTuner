@@ -166,7 +166,11 @@ class Instrument(abc.ABC):
         ):
             # Show the frequencies of the strings
             if verbose:
-                print(self.stringFrequencies)
+                print(
+                    np.array2string(
+                        self.stringFrequencies, separator=", ", max_line_width=np.inf
+                    )
+                )
 
             # Play the sound of the current strings
             if soundEnabled:
@@ -209,7 +213,7 @@ class Instrument(abc.ABC):
                     if turnIteration[i] != 0:
                         print(f"Turn string {i+1}: {turnIteration[i]}")
                 print("---------------------------------------------")
-            
+
             turns.append(turnIteration)
             if timeLimit:
                 if time.time() - startTime > timeLimit:
@@ -218,7 +222,7 @@ class Instrument(abc.ABC):
         if verbose:
             print("Tuning finished")
             print(f"Results: {self.frequencies}")
-        
+
         if showGraph:
             frequenciesIter.append(self.stringFrequencies.copy())
             self.graphsFromTuning(turns, frequenciesIter)
