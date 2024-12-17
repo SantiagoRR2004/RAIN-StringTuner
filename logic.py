@@ -606,10 +606,10 @@ class Tuner:
 if __name__ == "__main__":
     turner = Tuner()
 
-    turner.showAntecedentsAndConsequents()
+    # turner.showAntecedentsAndConsequents()
 
     turner.showControlSpace()
 
-    turner.graphExample(10, 0.45)
+    # turner.graphExample(10, 0.45)
 
     plt.show()
