@@ -1,3 +1,4 @@
+black
 scipy
 networkx
 scikit-fuzzy
